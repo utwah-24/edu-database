@@ -26,7 +26,7 @@ class EventContentController extends Controller
      *     path="/api/events/{eventId}/summaries",
      *     tags={"Event Content"},
      *     summary="Add summary to event",
-     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\RequestBody(required=true, @OA\JsonContent(
      *         @OA\Property(property="summary", type="string")
      *     )),
@@ -56,7 +56,7 @@ class EventContentController extends Controller
      *     path="/api/summaries/{id}",
      *     tags={"Event Content"},
      *     summary="Delete summary",
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\Response(response=200, description="Summary deleted successfully")
      * )
      */
@@ -77,7 +77,7 @@ class EventContentController extends Controller
      *     path="/api/events/{eventId}/themes",
      *     tags={"Event Content"},
      *     summary="Add theme to event",
-     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\RequestBody(required=true, @OA\JsonContent(
      *         @OA\Property(property="theme", type="string"),
      *         @OA\Property(property="description", type="string")
@@ -110,7 +110,7 @@ class EventContentController extends Controller
      *     path="/api/themes/{id}",
      *     tags={"Event Content"},
      *     summary="Delete theme",
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\Response(response=200, description="Theme deleted successfully")
      * )
      */
@@ -131,7 +131,7 @@ class EventContentController extends Controller
      *     path="/api/events/{eventId}/programmes",
      *     tags={"Event Content"},
      *     summary="Add programme to event",
-     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\RequestBody(required=true, @OA\JsonContent(
      *         @OA\Property(property="title", type="string"),
      *         @OA\Property(property="description", type="string"),
@@ -173,7 +173,7 @@ class EventContentController extends Controller
      *     path="/api/programmes/{id}",
      *     tags={"Event Content"},
      *     summary="Update programme",
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\RequestBody(required=true, @OA\JsonContent(
      *         @OA\Property(property="title", type="string"),
      *         @OA\Property(property="order", type="integer")
@@ -196,7 +196,7 @@ class EventContentController extends Controller
      *     path="/api/programmes/{id}",
      *     tags={"Event Content"},
      *     summary="Delete programme",
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\Response(response=200, description="Programme deleted successfully")
      * )
      */
@@ -217,7 +217,7 @@ class EventContentController extends Controller
      *     path="/api/events/{eventId}/speakers",
      *     tags={"Event Content"},
      *     summary="Add speaker to event",
-     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\RequestBody(required=true, @OA\JsonContent(
      *         @OA\Property(property="name", type="string"),
      *         @OA\Property(property="title", type="string"),
@@ -261,7 +261,7 @@ class EventContentController extends Controller
      *     path="/api/speakers/{id}",
      *     tags={"Event Content"},
      *     summary="Update speaker",
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\Response(response=200, description="Speaker updated successfully")
      * )
      */
@@ -280,7 +280,7 @@ class EventContentController extends Controller
      *     path="/api/speakers/{id}",
      *     tags={"Event Content"},
      *     summary="Delete speaker",
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\Response(response=200, description="Speaker deleted successfully")
      * )
      */
@@ -301,7 +301,7 @@ class EventContentController extends Controller
      *     path="/api/events/{eventId}/sponsors",
      *     tags={"Event Content"},
      *     summary="Add sponsor to event",
-     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\RequestBody(required=true, @OA\JsonContent(
      *         @OA\Property(property="name", type="string"),
      *         @OA\Property(property="tier", type="string"),
@@ -339,7 +339,7 @@ class EventContentController extends Controller
      *     path="/api/sponsors/{id}",
      *     tags={"Event Content"},
      *     summary="Delete sponsor",
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\Response(response=200, description="Sponsor deleted successfully")
      * )
      */
@@ -360,7 +360,7 @@ class EventContentController extends Controller
      *     path="/api/events/{eventId}/faqs",
      *     tags={"Event Content"},
      *     summary="Add FAQ to event",
-     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\RequestBody(required=true, @OA\JsonContent(
      *         @OA\Property(property="question", type="string"),
      *         @OA\Property(property="answer", type="string")
@@ -393,7 +393,7 @@ class EventContentController extends Controller
      *     path="/api/faqs/{id}",
      *     tags={"Event Content"},
      *     summary="Delete FAQ",
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
      *     @OA\Response(response=200, description="FAQ deleted successfully")
      * )
      */

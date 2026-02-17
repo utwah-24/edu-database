@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sponsors', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+            $table->uuid('id')->primary();
+            $table->foreignUuid('event_id')->constrained('events')->onDelete('cascade');
             $table->string('name');
             $table->string('tier')->nullable(); // gold, silver, bronze, etc.
             $table->string('logo')->nullable();

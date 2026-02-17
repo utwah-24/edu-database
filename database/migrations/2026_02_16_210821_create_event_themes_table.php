@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('event_themes', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+            $table->uuid('id')->primary();
+            $table->foreignUuid('event_id')->constrained('events')->onDelete('cascade');
             $table->string('theme');
             $table->text('description')->nullable();
             $table->timestamps();

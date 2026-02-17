@@ -99,9 +99,9 @@ class EventController extends Controller
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Event ID",
+     *         description="Event UUID",
      *         required=true,
-     *         @OA\Schema(type="integer")
+     *         @OA\Schema(type="string", format="uuid")
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -242,9 +242,9 @@ class EventController extends Controller
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Event ID",
+     *         description="Event UUID",
      *         required=true,
-     *         @OA\Schema(type="integer")
+     *         @OA\Schema(type="string", format="uuid")
      *     ),
      *     @OA\RequestBody(
      *         required=true,
@@ -304,9 +304,9 @@ class EventController extends Controller
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
-     *         description="Event ID",
+     *         description="Event UUID",
      *         required=true,
-     *         @OA\Schema(type="integer")
+     *         @OA\Schema(type="string", format="uuid")
      *     ),
      *     @OA\Response(response=200, description="Event deleted successfully"),
      *     @OA\Response(response=404, description="Event not found")

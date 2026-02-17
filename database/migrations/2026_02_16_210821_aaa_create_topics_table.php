@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('media', function (Blueprint $table) {
+        Schema::create('topics', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('event_id')->constrained('events')->onDelete('cascade');
-            $table->string('title')->nullable();
-            $table->string('type'); // image, video, document
-            $table->string('file_path');
-            $table->string('thumbnail')->nullable();
-            $table->text('description')->nullable();
+            $table->string('title');
+            $table->date('topic_date');
+            $table->text('content')->nullable();
+            $table->string('topic_picture')->nullable();
             $table->integer('order')->default(0);
             $table->timestamps();
         });
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('media');
+        Schema::dropIfExists('topics');
     }
 };

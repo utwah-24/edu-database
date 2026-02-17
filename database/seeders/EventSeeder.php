@@ -10,6 +10,7 @@ use App\Models\EventTheme;
 use App\Models\EventProgramme;
 use App\Models\EventResource;
 use App\Models\Speaker;
+use App\Models\Topic;
 use App\Models\FAQ;
 use App\Models\Media;
 use App\Models\Sponsor;
@@ -92,9 +93,38 @@ class EventSeeder extends Seeder
             'order' => 3,
         ]);
 
-        // Add speakers for 2024
+        // Add topics for 2024
+        $topic2024_ai = Topic::create([
+            'event_id' => $event2024->id,
+            'title' => 'The Future of Artificial Intelligence',
+            'topic_date' => '2024-09-15',
+            'content' => 'Exploring how AI is transforming industries and creating new opportunities. This session covers machine learning, deep learning, natural language processing, and the ethical implications of AI in modern society.',
+            'topic_picture' => '/images/topics/ai-future.jpg',
+            'order' => 1,
+        ]);
+
+        $topic2024_cloud = Topic::create([
+            'event_id' => $event2024->id,
+            'title' => 'Cloud Architecture & Scalability',
+            'topic_date' => '2024-09-16',
+            'content' => 'Learn about modern cloud architectures, microservices, serverless computing, and how to build scalable applications that can handle millions of users.',
+            'topic_picture' => '/images/topics/cloud-architecture.jpg',
+            'order' => 2,
+        ]);
+
+        $topic2024_security = Topic::create([
+            'event_id' => $event2024->id,
+            'title' => 'Cybersecurity in the Digital Age',
+            'topic_date' => '2024-09-17',
+            'content' => 'Understanding the evolving threat landscape and implementing robust security measures to protect your organization from cyber attacks.',
+            'topic_picture' => '/images/topics/cybersecurity.jpg',
+            'order' => 3,
+        ]);
+
+        // Add speakers for 2024 (linked to topics)
         Speaker::create([
             'event_id' => $event2024->id,
+            'topic_id' => $topic2024_ai->id,
             'name' => 'Dr. Sarah Johnson',
             'title' => 'Chief AI Scientist',
             'organization' => 'TechVision Labs',
@@ -108,6 +138,7 @@ class EventSeeder extends Seeder
 
         Speaker::create([
             'event_id' => $event2024->id,
+            'topic_id' => $topic2024_cloud->id,
             'name' => 'Michael Chen',
             'title' => 'Senior Solutions Architect',
             'organization' => 'CloudScale Systems',
@@ -121,6 +152,7 @@ class EventSeeder extends Seeder
 
         Speaker::create([
             'event_id' => $event2024->id,
+            'topic_id' => $topic2024_security->id,
             'name' => 'Emily Rodriguez',
             'title' => 'Cybersecurity Director',
             'organization' => 'SecureNet Inc',
@@ -129,6 +161,21 @@ class EventSeeder extends Seeder
             'email' => 'emily.rodriguez@securenet.com',
             'linkedin' => 'https://linkedin.com/in/emilyrodriguez',
             'order' => 3,
+        ]);
+
+        // Additional speaker for AI topic (showing one topic can have multiple speakers)
+        Speaker::create([
+            'event_id' => $event2024->id,
+            'topic_id' => $topic2024_ai->id,
+            'name' => 'Prof. David Martinez',
+            'title' => 'Professor of Computer Science',
+            'organization' => 'MIT',
+            'bio' => 'Professor Martinez teaches AI and machine learning at MIT and has contributed to numerous AI research projects.',
+            'photo' => '/images/speakers/david-martinez.jpg',
+            'email' => 'david.martinez@mit.edu',
+            'linkedin' => 'https://linkedin.com/in/davidmartinez',
+            'twitter' => '@profmartinez',
+            'order' => 4,
         ]);
 
         // Add sponsors for 2024
@@ -317,14 +364,45 @@ class EventSeeder extends Seeder
             'description' => 'Decentralized technologies reshaping digital economy',
         ]);
 
+        // Add topics for 2025
+        $topic2025_quantum = Topic::create([
+            'event_id' => $event2025->id,
+            'title' => 'Quantum Computing Revolution',
+            'topic_date' => '2025-10-20',
+            'content' => 'Discover the power of quantum computing and how it will solve problems that classical computers cannot. Learn about qubits, quantum algorithms, and real-world applications.',
+            'topic_picture' => '/images/topics/quantum-computing.jpg',
+            'order' => 1,
+        ]);
+
+        $topic2025_blockchain = Topic::create([
+            'event_id' => $event2025->id,
+            'title' => 'Blockchain & Web3 Technologies',
+            'topic_date' => '2025-10-21',
+            'content' => 'Explore decentralized applications, smart contracts, NFTs, and how blockchain is transforming industries from finance to healthcare.',
+            'topic_picture' => '/images/topics/blockchain.jpg',
+            'order' => 2,
+        ]);
+
         Speaker::create([
             'event_id' => $event2025->id,
+            'topic_id' => $topic2025_quantum->id,
             'name' => 'Dr. James Wilson',
             'title' => 'Quantum Research Lead',
             'organization' => 'Quantum Dynamics Corp',
             'bio' => 'Pioneer in quantum computing with groundbreaking research in quantum algorithms',
             'email' => 'james.wilson@quantumdynamics.com',
             'order' => 1,
+        ]);
+
+        Speaker::create([
+            'event_id' => $event2025->id,
+            'topic_id' => $topic2025_blockchain->id,
+            'name' => 'Alex Thompson',
+            'title' => 'Blockchain Architect',
+            'organization' => 'CryptoSolutions Inc',
+            'bio' => 'Expert in blockchain technology with experience building decentralized applications on Ethereum and Solana',
+            'email' => 'alex.thompson@cryptosolutions.com',
+            'order' => 2,
         ]);
 
         Sponsor::create([
@@ -376,14 +454,77 @@ class EventSeeder extends Seeder
             'description' => 'Immersive technologies and virtual experiences',
         ]);
 
+        // Add topics for 2026
+        $topic2026_ethics = Topic::create([
+            'event_id' => $event2026->id,
+            'title' => 'AI Ethics & Responsible Development',
+            'topic_date' => '2026-11-10',
+            'content' => 'Discussing the ethical implications of AI development and deployment. How can we ensure AI systems are fair, transparent, and accountable? This session covers bias in AI, privacy concerns, and regulatory frameworks.',
+            'topic_picture' => '/images/topics/ai-ethics.jpg',
+            'order' => 1,
+        ]);
+
+        $topic2026_sustainable = Topic::create([
+            'event_id' => $event2026->id,
+            'title' => 'Sustainable Technology Solutions',
+            'topic_date' => '2026-11-11',
+            'content' => 'Green technology and sustainable solutions for reducing carbon footprint in tech industry. Topics include renewable energy in data centers, e-waste management, and eco-friendly software development.',
+            'topic_picture' => '/images/topics/sustainable-tech.jpg',
+            'order' => 2,
+        ]);
+
+        $topic2026_metaverse = Topic::create([
+            'event_id' => $event2026->id,
+            'title' => 'Building the Metaverse',
+            'topic_date' => '2026-11-12',
+            'content' => 'Exploring virtual worlds, augmented reality, and immersive experiences. Learn about VR/AR technologies, 3D environments, and the future of digital interaction.',
+            'topic_picture' => '/images/topics/metaverse.jpg',
+            'order' => 3,
+        ]);
+
         Speaker::create([
             'event_id' => $event2026->id,
+            'topic_id' => $topic2026_ethics->id,
             'name' => 'Dr. Lisa Martinez',
             'title' => 'AI Ethics Researcher',
             'organization' => 'Ethics in Tech Institute',
             'bio' => 'Leading voice in AI ethics and responsible technology development',
             'email' => 'lisa.martinez@ethicsintech.org',
             'order' => 1,
+        ]);
+
+        Speaker::create([
+            'event_id' => $event2026->id,
+            'topic_id' => $topic2026_sustainable->id,
+            'name' => 'Jennifer Green',
+            'title' => 'Sustainability Officer',
+            'organization' => 'GreenTech Solutions',
+            'bio' => 'Expert in sustainable technology with focus on reducing environmental impact of digital infrastructure',
+            'email' => 'jennifer.green@greentech.com',
+            'order' => 2,
+        ]);
+
+        Speaker::create([
+            'event_id' => $event2026->id,
+            'topic_id' => $topic2026_metaverse->id,
+            'name' => 'Robert Kim',
+            'title' => 'VR/AR Developer',
+            'organization' => 'MetaVerse Studios',
+            'bio' => 'Pioneer in virtual reality development with experience creating immersive 3D environments',
+            'email' => 'robert.kim@metaverse.com',
+            'order' => 3,
+        ]);
+
+        // Additional speaker for AI Ethics topic (showing one-to-many relationship)
+        Speaker::create([
+            'event_id' => $event2026->id,
+            'topic_id' => $topic2026_ethics->id,
+            'name' => 'Prof. John Anderson',
+            'title' => 'Professor of Philosophy',
+            'organization' => 'Stanford University',
+            'bio' => 'Philosopher specializing in technology ethics and AI governance frameworks',
+            'email' => 'john.anderson@stanford.edu',
+            'order' => 4,
         ]);
 
         Sponsor::create([

@@ -5,28 +5,32 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
-class EventProgramme extends Model
+class Topic extends Model
 {
     use HasUuids;
 
     protected $fillable = [
         'event_id',
         'title',
-        'description',
-        'start_time',
-        'end_time',
-        'location',
-        'speaker',
+        'topic_date',
+        'content',
+        'topic_picture',
         'order'
     ];
 
     protected $casts = [
-        'start_time' => 'datetime',
-        'end_time' => 'datetime'
+        'topic_date' => 'date'
     ];
 
+    // One topic belongs to one event
     public function event()
     {
         return $this->belongsTo(Event::class);
+    }
+
+    // One topic can have many speakers
+    public function speakers()
+    {
+        return $this->hasMany(Speaker::class)->orderBy('order');
     }
 }

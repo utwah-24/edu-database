@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Event extends Model
 {
+    use HasUuids;
+
     protected $fillable = [
         'year',
         'title',
@@ -30,6 +33,11 @@ class Event extends Model
     public function themes()
     {
         return $this->hasMany(EventTheme::class);
+    }
+
+    public function topics()
+    {
+        return $this->hasMany(Topic::class)->orderBy('order');
     }
 
     public function programmes()

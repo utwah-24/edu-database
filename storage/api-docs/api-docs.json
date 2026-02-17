@@ -1,0 +1,610 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Event Management API",
+        "description": "API documentation for the Event Management System. This system allows managing yearly events with all their associated content including summaries, themes, programmes, speakers, sponsors, FAQs, media, galleries, and attendances.",
+        "contact": {
+            "email": "admin@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Local Development Server"
+        },
+        {
+            "url": "http://localhost",
+            "description": "Production Server"
+        }
+    ],
+    "paths": {
+        "/api/events": {
+            "get": {
+                "tags": ["Events"],
+                "summary": "Get all events",
+                "description": "Returns a list of all events",
+                "operationId": "getEvents",
+                "parameters": [
+                    {
+                        "name": "published_only",
+                        "in": "query",
+                        "description": "Filter only published events",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/Event"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Events"],
+                "summary": "Create a new event",
+                "description": "Creates a new event",
+                "operationId": "createEvent",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/EventRequest"}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Event created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/Event"}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/events/current": {
+            "get": {
+                "tags": ["Events"],
+                "summary": "Get current year event",
+                "description": "Returns the current year's published event with all related data",
+                "operationId": "getCurrentEvent",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/Event"}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Current event not found"
+                    }
+                }
+            }
+        },
+        "/api/events/year/{year}": {
+            "get": {
+                "tags": ["Events"],
+                "summary": "Get event by year",
+                "description": "Returns an event for a specific year with all related data",
+                "operationId": "getEventByYear",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "path",
+                        "description": "Event year",
+                        "required": true,
+                        "schema": {"type": "integer", "example": 2026}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/Event"}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Event not found"
+                    }
+                }
+            }
+        },
+        "/api/events/{id}": {
+            "get": {
+                "tags": ["Events"],
+                "summary": "Get event by ID",
+                "description": "Returns a single event with all related data",
+                "operationId": "getEventById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/Event"}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Event not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Events"],
+                "summary": "Update an event",
+                "description": "Updates an existing event",
+                "operationId": "updateEvent",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/EventRequest"}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Event updated successfully"
+                    },
+                    "404": {
+                        "description": "Event not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Events"],
+                "summary": "Delete an event",
+                "description": "Deletes an event and all related data",
+                "operationId": "deleteEvent",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Event deleted successfully"
+                    },
+                    "404": {
+                        "description": "Event not found"
+                    }
+                }
+            }
+        },
+        "/api/events/{eventId}/summaries": {
+            "post": {
+                "tags": ["Event Content"],
+                "summary": "Add summary to event",
+                "operationId": "addSummary",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "in": "path",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["summary"],
+                                "properties": {
+                                    "summary": {"type": "string", "example": "This is the event description..."}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Summary created successfully"
+                    }
+                }
+            }
+        },
+        "/api/events/{eventId}/themes": {
+            "post": {
+                "tags": ["Event Content"],
+                "summary": "Add theme to event",
+                "operationId": "addTheme",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "in": "path",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["theme"],
+                                "properties": {
+                                    "theme": {"type": "string", "example": "AI & Machine Learning"},
+                                    "description": {"type": "string", "example": "Exploring AI technologies"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Theme created successfully"
+                    }
+                }
+            }
+        },
+        "/api/events/{eventId}/speakers": {
+            "post": {
+                "tags": ["Event Content"],
+                "summary": "Add speaker to event",
+                "operationId": "addSpeaker",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "in": "path",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["name"],
+                                "properties": {
+                                    "name": {"type": "string", "example": "Dr. Jane Smith"},
+                                    "title": {"type": "string", "example": "CTO"},
+                                    "organization": {"type": "string", "example": "Tech Corp"},
+                                    "bio": {"type": "string", "example": "Expert in AI"},
+                                    "email": {"type": "string", "format": "email"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Speaker created successfully"
+                    }
+                }
+            }
+        },
+        "/api/events/{eventId}/sponsors": {
+            "post": {
+                "tags": ["Event Content"],
+                "summary": "Add sponsor to event",
+                "operationId": "addSponsor",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "in": "path",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["name"],
+                                "properties": {
+                                    "name": {"type": "string", "example": "Tech Corporation"},
+                                    "tier": {"type": "string", "example": "Gold"},
+                                    "website": {"type": "string", "example": "https://techcorp.com"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sponsor created successfully"
+                    }
+                }
+            }
+        },
+        "/api/topics": {
+            "get": {
+                "tags": ["Topics"],
+                "summary": "Get all topics",
+                "description": "Returns a list of all topics with their speakers",
+                "operationId": "getTopics",
+                "parameters": [
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Filter topics by event UUID",
+                        "required": false,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/Topic"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": ["Topics"],
+                "summary": "Create a new topic",
+                "description": "Creates a new topic for an event",
+                "operationId": "createTopic",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/TopicRequest"}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Topic created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/Topic"}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/topics/{id}": {
+            "get": {
+                "tags": ["Topics"],
+                "summary": "Get topic by ID",
+                "description": "Returns a single topic with all speakers",
+                "operationId": "getTopicById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Topic UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/Topic"}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Topic not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["Topics"],
+                "summary": "Update a topic",
+                "description": "Updates an existing topic",
+                "operationId": "updateTopic",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Topic UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {"$ref": "#/components/schemas/TopicRequest"}
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Topic updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {"$ref": "#/components/schemas/Topic"}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Topic not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["Topics"],
+                "summary": "Delete a topic",
+                "description": "Deletes a topic (speakers will have topic_id set to null)",
+                "operationId": "deleteTopic",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Topic UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Topic deleted successfully"
+                    },
+                    "404": {
+                        "description": "Topic not found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Event": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid", "example": "9b3d8f4e-7c1a-4d2b-9e5f-1a2b3c4d5e6f"},
+                    "year": {"type": "integer", "example": 2026},
+                    "title": {"type": "string", "example": "Annual Tech Conference 2026"},
+                    "location": {"type": "string", "example": "Convention Center"},
+                    "start_date": {"type": "string", "format": "date", "example": "2026-06-01"},
+                    "end_date": {"type": "string", "format": "date", "example": "2026-06-03"},
+                    "is_published": {"type": "boolean", "example": true},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"}
+                }
+            },
+            "EventRequest": {
+                "type": "object",
+                "required": ["year", "title"],
+                "properties": {
+                    "year": {"type": "integer", "example": 2026},
+                    "title": {"type": "string", "example": "Annual Tech Conference 2026"},
+                    "location": {"type": "string", "example": "Convention Center"},
+                    "start_date": {"type": "string", "format": "date", "example": "2026-06-01"},
+                    "end_date": {"type": "string", "format": "date", "example": "2026-06-03"},
+                    "is_published": {"type": "boolean", "example": true}
+                }
+            },
+            "Topic": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid", "example": "8a2c7b3d-6e4f-5c1a-2b9e-3f4a5b6c7d8e"},
+                    "event_id": {"type": "string", "format": "uuid", "example": "9b3d8f4e-7c1a-4d2b-9e5f-1a2b3c4d5e6f"},
+                    "title": {"type": "string", "example": "The Future of Artificial Intelligence"},
+                    "topic_date": {"type": "string", "format": "date", "example": "2026-11-10"},
+                    "content": {"type": "string", "example": "Exploring how AI is transforming industries and creating new opportunities..."},
+                    "topic_picture": {"type": "string", "example": "/images/topics/ai-future.jpg"},
+                    "order": {"type": "integer", "example": 1},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"},
+                    "speakers": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {"type": "string", "format": "uuid"},
+                                "name": {"type": "string"},
+                                "title": {"type": "string"},
+                                "organization": {"type": "string"}
+                            }
+                        }
+                    }
+                }
+            },
+            "TopicRequest": {
+                "type": "object",
+                "required": ["event_id", "title", "topic_date"],
+                "properties": {
+                    "event_id": {"type": "string", "format": "uuid", "example": "9b3d8f4e-7c1a-4d2b-9e5f-1a2b3c4d5e6f"},
+                    "title": {"type": "string", "example": "The Future of Artificial Intelligence"},
+                    "topic_date": {"type": "string", "format": "date", "example": "2026-11-10"},
+                    "content": {"type": "string", "example": "Exploring how AI is transforming industries..."},
+                    "topic_picture": {"type": "string", "example": "/images/topics/ai-future.jpg"},
+                    "order": {"type": "integer", "example": 1}
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Events",
+            "description": "Event management endpoints"
+        },
+        {
+            "name": "Topics",
+            "description": "Topic management endpoints - one topic can have multiple speakers"
+        },
+        {
+            "name": "Event Content",
+            "description": "Event content management endpoints (summaries, themes, speakers, etc.)"
+        }
+    ]
+}

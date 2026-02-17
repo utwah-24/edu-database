@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('event_summaries', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignUuid('event_id')->constrained('events')->onDelete('cascade');
-            $table->text('summary');
-            $table->timestamps();
+        Schema::table('speakers', function (Blueprint $table) {
+            $table->foreignUuid('topic_id')->nullable()->after('event_id')->constrained('topics')->onDelete('set null');
         });
     }
 
@@ -24,6 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('event_summaries');
+        Schema::table('speakers', function (Blueprint $table) {
+            $table->dropForeign(['topic_id']);
+            $table->dropColumn('topic_id');
+        });
     }
 };

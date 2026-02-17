@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\EventContentController;
+use App\Http\Controllers\Api\TopicController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,3 +50,12 @@ Route::delete('/speakers/{id}', [EventContentController::class, 'destroySpeaker'
 
 Route::delete('/sponsors/{id}', [EventContentController::class, 'destroySponsor']);
 Route::delete('/faqs/{id}', [EventContentController::class, 'destroyFaq']);
+
+// Topic Routes
+Route::prefix('topics')->group(function () {
+    Route::get('/', [TopicController::class, 'index']);
+    Route::get('/{id}', [TopicController::class, 'show']);
+    Route::post('/', [TopicController::class, 'store']);
+    Route::put('/{id}', [TopicController::class, 'update']);
+    Route::delete('/{id}', [TopicController::class, 'destroy']);
+});
