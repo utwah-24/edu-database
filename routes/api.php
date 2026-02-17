@@ -1,76 +1,51 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\DepartmentController;
-use App\Http\Controllers\Api\TeacherController;
-use App\Http\Controllers\Api\StudentController;
-use App\Http\Controllers\Api\CourseController;
-use App\Http\Controllers\Api\EnrollmentController;
-use App\Http\Controllers\Api\GradeController;
+use App\Http\Controllers\Api\EventController;
+use App\Http\Controllers\Api\EventContentController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
 
-// Department routes
-Route::prefix('departments')->group(function () {
-    Route::get('/', [DepartmentController::class, 'index']);
-    Route::post('/', [DepartmentController::class, 'store']);
-    Route::get('/{id}', [DepartmentController::class, 'show']);
-    Route::put('/{id}', [DepartmentController::class, 'update']);
-    Route::delete('/{id}', [DepartmentController::class, 'destroy']);
-    Route::get('/{id}/teachers', [DepartmentController::class, 'teachers']);
-    Route::get('/{id}/courses', [DepartmentController::class, 'courses']);
+// Event Routes
+Route::prefix('events')->group(function () {
+    // Public routes
+    Route::get('/', [EventController::class, 'index']);
+    Route::get('/current', [EventController::class, 'current']);
+    Route::get('/year/{year}', [EventController::class, 'getByYear']);
+    Route::get('/{id}', [EventController::class, 'show']);
+    
+    // Admin routes (add authentication middleware as needed)
+    Route::post('/', [EventController::class, 'store']);
+    Route::put('/{id}', [EventController::class, 'update']);
+    Route::delete('/{id}', [EventController::class, 'destroy']);
+    
+    // Event content routes
+    Route::post('/{eventId}/summaries', [EventContentController::class, 'storeSummary']);
+    Route::post('/{eventId}/themes', [EventContentController::class, 'storeTheme']);
+    Route::post('/{eventId}/programmes', [EventContentController::class, 'storeProgramme']);
+    Route::post('/{eventId}/speakers', [EventContentController::class, 'storeSpeaker']);
+    Route::post('/{eventId}/sponsors', [EventContentController::class, 'storeSponsor']);
+    Route::post('/{eventId}/faqs', [EventContentController::class, 'storeFaq']);
 });
 
-// Teacher routes
-Route::prefix('teachers')->group(function () {
-    Route::get('/', [TeacherController::class, 'index']);
-    Route::post('/', [TeacherController::class, 'store']);
-    Route::get('/{id}', [TeacherController::class, 'show']);
-    Route::put('/{id}', [TeacherController::class, 'update']);
-    Route::delete('/{id}', [TeacherController::class, 'destroy']);
-    Route::get('/{id}/courses', [TeacherController::class, 'courses']);
-});
+// Content management routes
+Route::delete('/summaries/{id}', [EventContentController::class, 'destroySummary']);
+Route::delete('/themes/{id}', [EventContentController::class, 'destroyTheme']);
 
-// Student routes
-Route::prefix('students')->group(function () {
-    Route::get('/', [StudentController::class, 'index']);
-    Route::post('/', [StudentController::class, 'store']);
-    Route::get('/{id}', [StudentController::class, 'show']);
-    Route::put('/{id}', [StudentController::class, 'update']);
-    Route::delete('/{id}', [StudentController::class, 'destroy']);
-    Route::get('/{id}/enrollments', [StudentController::class, 'enrollments']);
-    Route::get('/{id}/courses', [StudentController::class, 'courses']);
-});
+Route::put('/programmes/{id}', [EventContentController::class, 'updateProgramme']);
+Route::delete('/programmes/{id}', [EventContentController::class, 'destroyProgramme']);
 
-// Course routes
-Route::prefix('courses')->group(function () {
-    Route::get('/', [CourseController::class, 'index']);
-    Route::post('/', [CourseController::class, 'store']);
-    Route::get('/{id}', [CourseController::class, 'show']);
-    Route::put('/{id}', [CourseController::class, 'update']);
-    Route::delete('/{id}', [CourseController::class, 'destroy']);
-    Route::get('/{id}/students', [CourseController::class, 'students']);
-    Route::get('/{id}/enrollments', [CourseController::class, 'enrollments']);
-});
+Route::put('/speakers/{id}', [EventContentController::class, 'updateSpeaker']);
+Route::delete('/speakers/{id}', [EventContentController::class, 'destroySpeaker']);
 
-// Enrollment routes
-Route::prefix('enrollments')->group(function () {
-    Route::get('/', [EnrollmentController::class, 'index']);
-    Route::post('/', [EnrollmentController::class, 'store']);
-    Route::get('/{id}', [EnrollmentController::class, 'show']);
-    Route::put('/{id}', [EnrollmentController::class, 'update']);
-    Route::delete('/{id}', [EnrollmentController::class, 'destroy']);
-    Route::get('/{id}/grades', [EnrollmentController::class, 'grades']);
-});
-
-// Grade routes
-Route::prefix('grades')->group(function () {
-    Route::get('/', [GradeController::class, 'index']);
-    Route::post('/', [GradeController::class, 'store']);
-    Route::get('/{id}', [GradeController::class, 'show']);
-    Route::put('/{id}', [GradeController::class, 'update']);
-    Route::delete('/{id}', [GradeController::class, 'destroy']);
-});
+Route::delete('/sponsors/{id}', [EventContentController::class, 'destroySponsor']);
+Route::delete('/faqs/{id}', [EventContentController::class, 'destroyFaq']);

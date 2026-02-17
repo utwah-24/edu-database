@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Attendance extends Model
+{
+    protected $fillable = [
+        'event_id',
+        'name',
+        'email',
+        'phone',
+        'organization',
+        'registration_type',
+        'checked_in',
+        'checked_in_at'
+    ];
+
+    protected $casts = [
+        'checked_in' => 'boolean',
+        'checked_in_at' => 'datetime'
+    ];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+}
