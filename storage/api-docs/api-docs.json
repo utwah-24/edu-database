@@ -10,6 +10,10 @@
     },
     "servers": [
         {
+            "url": "http://127.0.0.1:8000",
+            "description": "Local dev (127.0.0.1)"
+        },
+        {
             "url": "http://localhost:8000",
             "description": "Local Development Server"
         },
@@ -293,6 +297,46 @@
                 }
             }
         },
+        "/api/events/{eventId}/programmes": {
+            "post": {
+                "tags": ["Event Content"],
+                "summary": "Add programme to event",
+                "operationId": "addProgramme",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "in": "path",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["title"],
+                                "properties": {
+                                    "title": {"type": "string", "example": "Opening keynote"},
+                                    "description": {"type": "string"},
+                                    "start_time": {"type": "string", "format": "date-time"},
+                                    "end_time": {"type": "string", "format": "date-time"},
+                                    "location": {"type": "string"},
+                                    "speaker": {"type": "string"},
+                                    "order": {"type": "integer", "example": 1}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {"description": "Programme created successfully"},
+                    "422": {"description": "Validation error"}
+                }
+            }
+        },
         "/api/events/{eventId}/speakers": {
             "post": {
                 "tags": ["Event Content"],
@@ -319,16 +363,19 @@
                                     "title": {"type": "string", "example": "CTO"},
                                     "organization": {"type": "string", "example": "Tech Corp"},
                                     "bio": {"type": "string", "example": "Expert in AI"},
-                                    "email": {"type": "string", "format": "email"}
+                                    "photo": {"type": "string"},
+                                    "email": {"type": "string", "format": "email"},
+                                    "linkedin": {"type": "string"},
+                                    "twitter": {"type": "string"},
+                                    "order": {"type": "integer", "example": 1}
                                 }
                             }
                         }
                     }
                 },
                 "responses": {
-                    "201": {
-                        "description": "Speaker created successfully"
-                    }
+                    "201": {"description": "Speaker created successfully"},
+                    "422": {"description": "Validation error"}
                 }
             }
         },
@@ -356,16 +403,251 @@
                                 "properties": {
                                     "name": {"type": "string", "example": "Tech Corporation"},
                                     "tier": {"type": "string", "example": "Gold"},
-                                    "website": {"type": "string", "example": "https://techcorp.com"}
+                                    "logo": {"type": "string"},
+                                    "website": {"type": "string", "example": "https://techcorp.com"},
+                                    "description": {"type": "string"},
+                                    "order": {"type": "integer", "example": 1}
                                 }
                             }
                         }
                     }
                 },
                 "responses": {
-                    "201": {
-                        "description": "Sponsor created successfully"
+                    "201": {"description": "Sponsor created successfully"},
+                    "422": {"description": "Validation error"}
+                }
+            }
+        },
+        "/api/events/{eventId}/faqs": {
+            "post": {
+                "tags": ["Event Content"],
+                "summary": "Add FAQ to event",
+                "operationId": "addFaq",
+                "parameters": [
+                    {
+                        "name": "eventId",
+                        "in": "path",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
                     }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["question", "answer"],
+                                "properties": {
+                                    "question": {"type": "string"},
+                                    "answer": {"type": "string"},
+                                    "order": {"type": "integer", "example": 1}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {"description": "FAQ created successfully"},
+                    "422": {"description": "Validation error"}
+                }
+            }
+        },
+        "/api/summaries/{id}": {
+            "delete": {
+                "tags": ["Event Content"],
+                "summary": "Delete summary",
+                "operationId": "deleteSummary",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Summary UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {"description": "Summary deleted successfully"},
+                    "404": {"description": "Summary not found"}
+                }
+            }
+        },
+        "/api/themes/{id}": {
+            "delete": {
+                "tags": ["Event Content"],
+                "summary": "Delete theme",
+                "operationId": "deleteTheme",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Theme UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {"description": "Theme deleted successfully"},
+                    "404": {"description": "Theme not found"}
+                }
+            }
+        },
+        "/api/programmes/{id}": {
+            "put": {
+                "tags": ["Event Content"],
+                "summary": "Update programme",
+                "operationId": "updateProgramme",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Programme UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {"type": "string"},
+                                    "description": {"type": "string"},
+                                    "start_time": {"type": "string", "format": "date-time"},
+                                    "end_time": {"type": "string", "format": "date-time"},
+                                    "location": {"type": "string"},
+                                    "speaker": {"type": "string"},
+                                    "order": {"type": "integer"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {"description": "Programme updated successfully"},
+                    "404": {"description": "Programme not found"}
+                }
+            },
+            "delete": {
+                "tags": ["Event Content"],
+                "summary": "Delete programme",
+                "operationId": "deleteProgramme",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Programme UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {"description": "Programme deleted successfully"},
+                    "404": {"description": "Programme not found"}
+                }
+            }
+        },
+        "/api/speakers/{id}": {
+            "put": {
+                "tags": ["Event Content"],
+                "summary": "Update speaker",
+                "operationId": "updateSpeaker",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Speaker UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string"},
+                                    "title": {"type": "string"},
+                                    "organization": {"type": "string"},
+                                    "bio": {"type": "string"},
+                                    "photo": {"type": "string"},
+                                    "email": {"type": "string", "format": "email"},
+                                    "linkedin": {"type": "string"},
+                                    "twitter": {"type": "string"},
+                                    "topic_id": {"type": "string", "format": "uuid"},
+                                    "order": {"type": "integer"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {"description": "Speaker updated successfully"},
+                    "404": {"description": "Speaker not found"}
+                }
+            },
+            "delete": {
+                "tags": ["Event Content"],
+                "summary": "Delete speaker",
+                "operationId": "deleteSpeaker",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Speaker UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {"description": "Speaker deleted successfully"},
+                    "404": {"description": "Speaker not found"}
+                }
+            }
+        },
+        "/api/sponsors/{id}": {
+            "delete": {
+                "tags": ["Event Content"],
+                "summary": "Delete sponsor",
+                "operationId": "deleteSponsor",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Sponsor UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {"description": "Sponsor deleted successfully"},
+                    "404": {"description": "Sponsor not found"}
+                }
+            }
+        },
+        "/api/faqs/{id}": {
+            "delete": {
+                "tags": ["Event Content"],
+                "summary": "Delete FAQ",
+                "operationId": "deleteFaq",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "FAQ UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {"description": "FAQ deleted successfully"},
+                    "404": {"description": "FAQ not found"}
                 }
             }
         },
