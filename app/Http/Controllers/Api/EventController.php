@@ -53,7 +53,7 @@ class EventController extends Controller
      *     path="/api/events",
      *     tags={"Events"},
      *     summary="Create a new event",
-     *     description="Creates a new event",
+     *     description="Creates a new event. Optional cover: JSON field `cover_image` (URL or path string), or `multipart/form-data` with `cover_image` file upload.",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(ref="#/components/schemas/EventRequest")
@@ -71,7 +71,9 @@ class EventController extends Controller
         $validator = Validator::make($request->all(), [
             'year' => 'required|integer|unique:events,year',
             'title' => 'required|string|max:255',
-            'cover_image' => 'nullable|image|max:5120',
+            'cover_image' => $request->hasFile('cover_image')
+                ? ['nullable', 'image', 'max:5120']
+                : ['nullable', 'string', 'max:2048'],
             'location' => 'nullable|string|max:255',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -88,6 +90,10 @@ class EventController extends Controller
         $payload = $request->except('cover_image');
         if ($request->hasFile('cover_image')) {
             $payload['cover_image'] = $this->storeCoverImageAndGetUrl($request->file('cover_image'), (string) $request->year);
+        } elseif ($request->exists('cover_image')) {
+            $payload['cover_image'] = filled($request->input('cover_image'))
+                ? (string) $request->input('cover_image')
+                : null;
         }
 
         $event = Event::create($payload);
@@ -247,7 +253,7 @@ class EventController extends Controller
      *     path="/api/events/{id}",
      *     tags={"Events"},
      *     summary="Update an event",
-     *     description="Updates an existing event",
+     *     description="Updates an existing event. Optional cover: JSON `cover_image` (URL/path string or null to clear), or multipart file `cover_image`. Omit the field to leave unchanged.",
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -282,7 +288,9 @@ class EventController extends Controller
         $validator = Validator::make($request->all(), [
             'year' => 'sometimes|integer|unique:events,year,' . $id,
             'title' => 'sometimes|string|max:255',
-            'cover_image' => 'nullable|image|max:5120',
+            'cover_image' => $request->hasFile('cover_image')
+                ? ['nullable', 'image', 'max:5120']
+                : ['nullable', 'string', 'max:2048'],
             'location' => 'nullable|string|max:255',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -301,6 +309,11 @@ class EventController extends Controller
             $this->deleteIfLocalStorageUrl($event->cover_image);
             $eventYear = (string) ($payload['year'] ?? $event->year);
             $payload['cover_image'] = $this->storeCoverImageAndGetUrl($request->file('cover_image'), $eventYear);
+        } elseif ($request->exists('cover_image')) {
+            $this->deleteIfLocalStorageUrl($event->cover_image);
+            $payload['cover_image'] = filled($request->input('cover_image'))
+                ? (string) $request->input('cover_image')
+                : null;
         }
 
         $event->update($payload);

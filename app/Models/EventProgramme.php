@@ -17,6 +17,7 @@ class EventProgramme extends Model
         'end_time',
         'location',
         'speaker',
+        'event_pdf',
         'order'
     ];
 

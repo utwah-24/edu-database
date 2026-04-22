@@ -34,11 +34,13 @@ Not Found http://localhost:8000/docs/api-docs.json
 6. ✅ PUT `/api/events/{id}` - Update event
 7. ✅ DELETE `/api/events/{id}` - Delete event
 
-#### **Event Content (4 endpoints documented):**
+#### **Event Content (3 endpoints documented):**
 1. ✅ POST `/api/events/{eventId}/summaries` - Add summary
-2. ✅ POST `/api/events/{eventId}/themes` - Add theme
-3. ✅ POST `/api/events/{eventId}/speakers` - Add speaker
-4. ✅ POST `/api/events/{eventId}/sponsors` - Add sponsor
+2. ✅ POST `/api/events/{eventId}/speakers` - Add speaker
+3. ✅ POST `/api/events/{eventId}/sponsors` - Add sponsor
+
+#### **Event themes (1 endpoint documented):**
+1. ✅ POST `/api/events/{eventId}/themes` - Add theme (`id`, `event_id`, `theme`, `description`, `created_at`, `updated_at`)
 
 ### Features:
 - ✅ Complete request/response schemas
@@ -46,7 +48,7 @@ Not Found http://localhost:8000/docs/api-docs.json
 - ✅ Parameter descriptions
 - ✅ Validation requirements
 - ✅ HTTP status codes
-- ✅ Organized by tags (Events, Event Content)
+- ✅ Organized by tags (Events, Event Content, Event themes)
 
 ## 🚀 How to Use Now
 

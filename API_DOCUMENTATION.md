@@ -15,15 +15,15 @@
 5. [Events](#events)
 6. [Event Content](#event-content)
    - [Summaries](#summaries)
-   - [Themes](#themes)
    - [Programmes](#programmes)
    - [Speakers](#speakers)
    - [Sponsors](#sponsors)
    - [FAQs](#faqs)
-7. [Topics](#topics)
-8. [Field Validation Reference](#field-validation-reference)
-9. [Common Workflows](#common-workflows)
-10. [cURL Examples](#curl-examples)
+7. [Event themes](#event-themes)
+8. [Topics](#topics)
+9. [Field Validation Reference](#field-validation-reference)
+10. [Common Workflows](#common-workflows)
+11. [cURL Examples](#curl-examples)
 
 ---
 
@@ -464,51 +464,6 @@ DELETE /api/summaries/{id}
 
 ---
 
-### Themes
-
-#### Add Theme
-
-```
-POST /api/events/{eventId}/themes
-```
-
-**Request Body**
-
-```json
-{
-  "theme": "Innovation & Technology",
-  "description": "Exploring future trends in the tech industry"
-}
-```
-
-| Field         | Type   | Required | Rules             |
-|---------------|--------|----------|-------------------|
-| `theme`       | string | yes      | Max 255 chars     |
-| `description` | text   | no       | Any text          |
-
-**Response (201)**
-```json
-{
-  "success": true,
-  "data": {
-    "id": "...",
-    "event_id": "...",
-    "theme": "Innovation & Technology",
-    "description": "Exploring future trends...",
-    "created_at": "...",
-    "updated_at": "..."
-  }
-}
-```
-
-#### Delete Theme
-
-```
-DELETE /api/themes/{id}
-```
-
----
-
 ### Programmes
 
 #### Add Programme Item
@@ -676,6 +631,29 @@ POST /api/events/{eventId}/faqs
 ```
 DELETE /api/faqs/{id}
 ```
+
+---
+
+## Event themes
+
+Use this title for theme data in your UI: **Event themes**.
+
+Theme records are available in event payloads, including:
+
+- `GET /api/events/current`
+- `GET /api/events/{id}`
+- `GET /api/events/year/{year}`
+
+Each item in `data.themes` contains:
+
+| Field         | Type     |
+|---------------|----------|
+| `id`          | UUID     |
+| `event_id`    | UUID     |
+| `theme`       | string   |
+| `description` | text     |
+| `created_at`  | datetime |
+| `updated_at`  | datetime |
 
 ---
 
@@ -876,7 +854,7 @@ DELETE /api/topics/{id}
 ```
 1. POST /api/events                          → create the event, note the returned UUID
 2. POST /api/events/{id}/summaries           → add event description
-3. POST /api/events/{id}/themes              → add one or more themes
+3. GET  /api/events/{id}                     → retrieve `themes` in event payload
 4. POST /api/events/{id}/programmes          → add agenda items (repeat for each)
 5. POST /api/events/{id}/speakers            → add speakers (repeat for each)
 6. POST /api/events/{id}/sponsors            → add sponsors (repeat for each)

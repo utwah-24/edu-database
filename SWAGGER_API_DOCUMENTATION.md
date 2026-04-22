@@ -66,7 +66,7 @@ All content management endpoints with Swagger annotations:
 - POST /api/events/{eventId}/summaries
 - DELETE /api/summaries/{id}
 
-**Themes:**
+**Event themes:**
 - POST /api/events/{eventId}/themes
 - DELETE /api/themes/{id}
 
@@ -103,7 +103,8 @@ All content management endpoints with Swagger annotations:
 ### **Tags for Organization** ✓
 
 - **Events** - Main event management
-- **Event Content** - Content management (summaries, themes, speakers, etc.)
+- **Event Content** - Content management (summaries, speakers, sponsors, etc.)
+- **Event themes** - Theme management (`id`, `event_id`, `theme`, `description`, `created_at`, `updated_at`)
 
 ## 🚀 How to Access Swagger Documentation
 
@@ -133,7 +134,7 @@ When you access `http://localhost:8000/api/documentation`:
 
 1. **View All Endpoints**
    - See complete API structure
-   - Organized by tags (Events, Event Content)
+   - Organized by tags (Events, Event Content, Event themes)
 
 2. **Test Endpoints Directly**
    - Click "Try it out" on any endpoint

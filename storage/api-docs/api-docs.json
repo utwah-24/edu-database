@@ -10,6 +10,10 @@
     },
     "servers": [
         {
+            "url": "/",
+            "description": "Same host as Swagger UI (use this so Try it out hits the app you opened in the browser)"
+        },
+        {
             "url": "http://127.0.0.1:8000",
             "description": "Local dev (127.0.0.1)"
         },
@@ -63,13 +67,32 @@
             "post": {
                 "tags": ["Events"],
                 "summary": "Create a new event",
-                "description": "Creates a new event",
+                "description": "Creates a new event. Cover image: send `cover_image` as a URL/path string in JSON, or upload a file as `cover_image` in multipart/form-data.",
                 "operationId": "createEvent",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {"$ref": "#/components/schemas/EventRequest"}
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["year", "title"],
+                                "properties": {
+                                    "year": {"type": "integer", "example": 2026},
+                                    "title": {"type": "string", "example": "Annual Tech Conference 2026"},
+                                    "cover_image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Optional cover image file"
+                                    },
+                                    "location": {"type": "string", "example": "Convention Center"},
+                                    "start_date": {"type": "string", "format": "date", "example": "2026-06-01"},
+                                    "end_date": {"type": "string", "format": "date", "example": "2026-06-03"},
+                                    "is_published": {"type": "boolean", "example": true}
+                                }
+                            }
                         }
                     }
                 },
@@ -171,7 +194,7 @@
             "put": {
                 "tags": ["Events"],
                 "summary": "Update an event",
-                "description": "Updates an existing event",
+                "description": "Updates an existing event. Cover image: JSON `cover_image` string (URL/path) or null to clear; or multipart file `cover_image`. Omit to keep current.",
                 "operationId": "updateEvent",
                 "parameters": [
                     {
@@ -187,12 +210,42 @@
                     "content": {
                         "application/json": {
                             "schema": {"$ref": "#/components/schemas/EventRequest"}
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "year": {"type": "integer", "example": 2026},
+                                    "title": {"type": "string", "example": "Annual Tech Conference 2026"},
+                                    "cover_image": {
+                                        "type": "string",
+                                        "format": "binary",
+                                        "description": "Optional new cover image file"
+                                    },
+                                    "location": {"type": "string"},
+                                    "start_date": {"type": "string", "format": "date"},
+                                    "end_date": {"type": "string", "format": "date"},
+                                    "is_published": {"type": "boolean"}
+                                }
+                            }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Event updated successfully"
+                        "description": "Event updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "message": {"type": "string", "example": "Event updated successfully"},
+                                        "data": {"$ref": "#/components/schemas/Event"}
+                                    }
+                                }
+                            }
+                        }
                     },
                     "404": {
                         "description": "Event not found"
@@ -226,45 +279,11 @@
                 }
             }
         },
-        "/api/events/{eventId}/summaries": {
-            "post": {
-                "tags": ["Event Content"],
-                "summary": "Add summary to event",
-                "operationId": "addSummary",
-                "parameters": [
-                    {
-                        "name": "eventId",
-                        "in": "path",
-                        "description": "Event UUID",
-                        "required": true,
-                        "schema": {"type": "string", "format": "uuid"}
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "required": ["summary"],
-                                "properties": {
-                                    "summary": {"type": "string", "example": "This is the event description..."}
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Summary created successfully"
-                    }
-                }
-            }
-        },
         "/api/events/{eventId}/themes": {
             "post": {
-                "tags": ["Event Content"],
-                "summary": "Add theme to event",
+                "tags": ["Event themes"],
+                "summary": "Add theme to event (Event themes)",
+                "description": "Creates a theme row. List themes for an event with GET /api/themes?event_id={eventUuid}. Fetch one theme by its id with GET /api/themes/{id}.",
                 "operationId": "addTheme",
                 "parameters": [
                     {
@@ -292,154 +311,73 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Theme created successfully"
-                    }
-                }
-            }
-        },
-        "/api/events/{eventId}/programmes": {
-            "post": {
-                "tags": ["Event Content"],
-                "summary": "Add programme to event",
-                "operationId": "addProgramme",
-                "parameters": [
-                    {
-                        "name": "eventId",
-                        "in": "path",
-                        "description": "Event UUID",
-                        "required": true,
-                        "schema": {"type": "string", "format": "uuid"}
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "required": ["title"],
-                                "properties": {
-                                    "title": {"type": "string", "example": "Opening keynote"},
-                                    "description": {"type": "string"},
-                                    "start_time": {"type": "string", "format": "date-time"},
-                                    "end_time": {"type": "string", "format": "date-time"},
-                                    "location": {"type": "string"},
-                                    "speaker": {"type": "string"},
-                                    "order": {"type": "integer", "example": 1}
+                        "description": "Theme created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventTheme"}
+                                    }
                                 }
                             }
                         }
-                    }
-                },
-                "responses": {
-                    "201": {"description": "Programme created successfully"},
+                    },
                     "422": {"description": "Validation error"}
                 }
             }
         },
-        "/api/events/{eventId}/speakers": {
-            "post": {
-                "tags": ["Event Content"],
-                "summary": "Add speaker to event",
-                "operationId": "addSpeaker",
+        "/api/faqs": {
+            "get": {
+                "tags": ["FAQ"],
+                "summary": "List FAQs for an event",
+                "description": "Required query `event_id` is the event UUID.",
+                "operationId": "listFaqs",
                 "parameters": [
                     {
-                        "name": "eventId",
-                        "in": "path",
+                        "name": "event_id",
+                        "in": "query",
                         "description": "Event UUID",
                         "required": true,
                         "schema": {"type": "string", "format": "uuid"}
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "required": ["name"],
-                                "properties": {
-                                    "name": {"type": "string", "example": "Dr. Jane Smith"},
-                                    "title": {"type": "string", "example": "CTO"},
-                                    "organization": {"type": "string", "example": "Tech Corp"},
-                                    "bio": {"type": "string", "example": "Expert in AI"},
-                                    "photo": {"type": "string"},
-                                    "email": {"type": "string", "format": "email"},
-                                    "linkedin": {"type": "string"},
-                                    "twitter": {"type": "string"},
-                                    "order": {"type": "integer", "example": 1}
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/FAQ"}
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
-                },
-                "responses": {
-                    "201": {"description": "Speaker created successfully"},
-                    "422": {"description": "Validation error"}
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Missing or invalid event_id"}
                 }
-            }
-        },
-        "/api/events/{eventId}/sponsors": {
+            },
             "post": {
-                "tags": ["Event Content"],
-                "summary": "Add sponsor to event",
-                "operationId": "addSponsor",
-                "parameters": [
-                    {
-                        "name": "eventId",
-                        "in": "path",
-                        "description": "Event UUID",
-                        "required": true,
-                        "schema": {"type": "string", "format": "uuid"}
-                    }
-                ],
+                "tags": ["FAQ"],
+                "summary": "Create FAQ for an event",
+                "operationId": "createFaq",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "type": "object",
-                                "required": ["name"],
+                                "required": ["event_id", "question", "answer"],
                                 "properties": {
-                                    "name": {"type": "string", "example": "Tech Corporation"},
-                                    "tier": {"type": "string", "example": "Gold"},
-                                    "logo": {"type": "string"},
-                                    "website": {"type": "string", "example": "https://techcorp.com"},
-                                    "description": {"type": "string"},
-                                    "order": {"type": "integer", "example": 1}
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {"description": "Sponsor created successfully"},
-                    "422": {"description": "Validation error"}
-                }
-            }
-        },
-        "/api/events/{eventId}/faqs": {
-            "post": {
-                "tags": ["Event Content"],
-                "summary": "Add FAQ to event",
-                "operationId": "addFaq",
-                "parameters": [
-                    {
-                        "name": "eventId",
-                        "in": "path",
-                        "description": "Event UUID",
-                        "required": true,
-                        "schema": {"type": "string", "format": "uuid"}
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "required": ["question", "answer"],
-                                "properties": {
+                                    "event_id": {"type": "string", "format": "uuid"},
                                     "question": {"type": "string"},
                                     "answer": {"type": "string"},
                                     "order": {"type": "integer", "example": 1}
@@ -449,15 +387,469 @@
                     }
                 },
                 "responses": {
-                    "201": {"description": "FAQ created successfully"},
+                    "201": {
+                        "description": "FAQ created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/FAQ"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Validation error"}
+                }
+            }
+        },
+        "/api/summaries": {
+            "get": {
+                "tags": ["Event summaries"],
+                "summary": "List summaries for an event",
+                "description": "Required query `event_id` is the event UUID. Returns summary rows (UI title: **Event summaries**). Each item: id, event_id, `summary`, created_at, updated_at.",
+                "operationId": "listSummaries",
+                "parameters": [
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/EventSummary"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Missing or invalid event_id"}
+                }
+            },
+            "post": {
+                "tags": ["Event summaries"],
+                "summary": "Add summary to event (Event summaries)",
+                "description": "Body includes `event_id` (event UUID) and `summary` (string). UI title: **Event summaries**.",
+                "operationId": "addSummary",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["event_id", "summary"],
+                                "properties": {
+                                    "event_id": {"type": "string", "format": "uuid"},
+                                    "summary": {"type": "string", "example": "This is the event description..."}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Summary created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventSummary"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Validation error"}
+                }
+            }
+        },
+        "/api/programmes": {
+            "get": {
+                "tags": ["Event programmes"],
+                "summary": "List programmes for an event",
+                "description": "Required query `event_id` is the event UUID.",
+                "operationId": "listProgrammes",
+                "parameters": [
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/EventProgramme"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Missing or invalid event_id"}
+                }
+            },
+            "post": {
+                "tags": ["Event programmes"],
+                "summary": "Add programme to event",
+                "description": "Body includes `event_id` (event UUID) and programme fields.",
+                "operationId": "addProgramme",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["event_id", "title"],
+                                "properties": {
+                                    "event_id": {"type": "string", "format": "uuid"},
+                                    "title": {"type": "string", "example": "Opening keynote"},
+                                    "description": {"type": "string"},
+                                    "start_time": {"type": "string", "format": "date-time"},
+                                    "end_time": {"type": "string", "format": "date-time"},
+                                    "location": {"type": "string"},
+                                    "speaker": {"type": "string"},
+                                    "event_pdf": {"type": "string", "format": "uri", "description": "Google Drive link to the programme PDF"},
+                                    "order": {"type": "integer", "example": 1}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Programme created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventProgramme"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Validation error"}
+                }
+            }
+        },
+        "/api/speakers": {
+            "get": {
+                "tags": ["Speakers"],
+                "summary": "List speakers for an event",
+                "description": "Required query `event_id` is the event UUID.",
+                "operationId": "listSpeakers",
+                "parameters": [
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/Speaker"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Missing or invalid event_id"}
+                }
+            },
+            "post": {
+                "tags": ["Speakers"],
+                "summary": "Add speaker to event",
+                "description": "Body includes `event_id` (event UUID). Use multipart/form-data to upload `photo` as a file, or JSON without a file.",
+                "operationId": "addSpeaker",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["event_id", "name"],
+                                "properties": {
+                                    "event_id": {"type": "string", "format": "uuid"},
+                                    "name": {"type": "string", "example": "Dr. Jane Smith"},
+                                    "title": {"type": "string", "example": "CTO"},
+                                    "organization": {"type": "string", "example": "Tech Corp"},
+                                    "bio": {"type": "string", "example": "Expert in AI"},
+                                    "email": {"type": "string", "format": "email"},
+                                    "linkedin": {"type": "string"},
+                                    "twitter": {"type": "string"},
+                                    "topic_id": {"type": "string", "format": "uuid"},
+                                    "order": {"type": "integer", "example": 1}
+                                }
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["event_id", "name"],
+                                "properties": {
+                                    "event_id": {"type": "string", "format": "uuid"},
+                                    "name": {"type": "string"},
+                                    "title": {"type": "string"},
+                                    "organization": {"type": "string"},
+                                    "bio": {"type": "string"},
+                                    "email": {"type": "string"},
+                                    "linkedin": {"type": "string"},
+                                    "twitter": {"type": "string"},
+                                    "topic_id": {"type": "string", "format": "uuid"},
+                                    "order": {"type": "integer"},
+                                    "photo": {"type": "string", "format": "binary"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Speaker created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/Speaker"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Validation error"}
+                }
+            }
+        },
+        "/api/sponsors": {
+            "get": {
+                "tags": ["Sponsors"],
+                "summary": "List sponsors for an event",
+                "description": "Required query `event_id` is the event UUID.",
+                "operationId": "listSponsors",
+                "parameters": [
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/Sponsor"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Missing or invalid event_id"}
+                }
+            },
+            "post": {
+                "tags": ["Sponsors"],
+                "summary": "Add sponsor to event",
+                "description": "Body includes `event_id` (event UUID). Use multipart/form-data to upload `logo` as a file, or JSON without a file.",
+                "operationId": "addSponsor",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["event_id", "name"],
+                                "properties": {
+                                    "event_id": {"type": "string", "format": "uuid"},
+                                    "name": {"type": "string", "example": "Tech Corporation"},
+                                    "tier": {"type": "string", "example": "Gold"},
+                                    "website": {"type": "string", "example": "https://techcorp.com"},
+                                    "description": {"type": "string"},
+                                    "order": {"type": "integer", "example": 1}
+                                }
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["event_id", "name"],
+                                "properties": {
+                                    "event_id": {"type": "string", "format": "uuid"},
+                                    "name": {"type": "string"},
+                                    "tier": {"type": "string"},
+                                    "website": {"type": "string"},
+                                    "description": {"type": "string"},
+                                    "order": {"type": "integer"},
+                                    "logo": {"type": "string", "format": "binary"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sponsor created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/Sponsor"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
                     "422": {"description": "Validation error"}
                 }
             }
         },
         "/api/summaries/{id}": {
+            "get": {
+                "tags": ["Event summaries"],
+                "summary": "Get summary by id",
+                "description": "Path `id` is the summary UUID (not the event UUID).",
+                "operationId": "getSummary",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Summary UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventSummary"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Summary not found"}
+                }
+            },
+            "put": {
+                "tags": ["Event summaries"],
+                "summary": "Update summary by id (Event summaries)",
+                "description": "Body includes only `summary` (string).",
+                "operationId": "updateSummary",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Summary UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["summary"],
+                                "properties": {
+                                    "summary": {"type": "string", "example": "Updated event description..."}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Summary updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventSummary"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Summary not found"},
+                    "422": {"description": "Validation error"}
+                }
+            },
             "delete": {
-                "tags": ["Event Content"],
-                "summary": "Delete summary",
+                "tags": ["Event summaries"],
+                "summary": "Delete summary (Event summaries)",
                 "operationId": "deleteSummary",
                 "parameters": [
                     {
@@ -474,10 +866,127 @@
                 }
             }
         },
+        "/api/themes": {
+            "get": {
+                "tags": ["Event themes"],
+                "summary": "List all themes for an event",
+                "description": "Required query `event_id` is the event UUID. Returns theme rows for that event (UI title: **Event themes**). Fields per item: id, event_id, theme, description, created_at, updated_at.",
+                "operationId": "listThemes",
+                "parameters": [
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/EventTheme"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Missing or invalid event_id"}
+                }
+            }
+        },
         "/api/themes/{id}": {
+            "get": {
+                "tags": ["Event themes"],
+                "summary": "Get theme by id",
+                "description": "Path `id` is the theme UUID.",
+                "operationId": "getTheme",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Theme UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventTheme"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Theme not found"}
+                }
+            },
+            "put": {
+                "tags": ["Event themes"],
+                "summary": "Update theme by id (Event themes)",
+                "description": "Partial update: send `theme` and/or `description`. At least one field required.",
+                "operationId": "updateTheme",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Theme UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "theme": {"type": "string", "example": "Sustainability"},
+                                    "description": {"type": "string", "nullable": true, "example": "Green innovation track"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Theme updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventTheme"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Theme not found"},
+                    "422": {"description": "Validation error"}
+                }
+            },
             "delete": {
-                "tags": ["Event Content"],
-                "summary": "Delete theme",
+                "tags": ["Event themes"],
+                "summary": "Delete theme (Event themes)",
                 "operationId": "deleteTheme",
                 "parameters": [
                     {
@@ -495,9 +1004,41 @@
             }
         },
         "/api/programmes/{id}": {
+            "get": {
+                "tags": ["Event programmes"],
+                "summary": "Get programme by id",
+                "description": "Path `id` is the programme UUID (not the event UUID).",
+                "operationId": "getProgramme",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Programme UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventProgramme"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Programme not found"}
+                }
+            },
             "put": {
-                "tags": ["Event Content"],
-                "summary": "Update programme",
+                "tags": ["Event programmes"],
+                "summary": "Update programme by programme id",
                 "operationId": "updateProgramme",
                 "parameters": [
                     {
@@ -521,6 +1062,7 @@
                                     "end_time": {"type": "string", "format": "date-time"},
                                     "location": {"type": "string"},
                                     "speaker": {"type": "string"},
+                                    "event_pdf": {"type": "string", "format": "uri", "nullable": true, "description": "Google Drive link to the programme PDF"},
                                     "order": {"type": "integer"}
                                 }
                             }
@@ -528,12 +1070,26 @@
                     }
                 },
                 "responses": {
-                    "200": {"description": "Programme updated successfully"},
-                    "404": {"description": "Programme not found"}
+                    "200": {
+                        "description": "Programme updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventProgramme"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Programme not found"},
+                    "422": {"description": "Validation error"}
                 }
             },
             "delete": {
-                "tags": ["Event Content"],
+                "tags": ["Event programmes"],
                 "summary": "Delete programme",
                 "operationId": "deleteProgramme",
                 "parameters": [
@@ -552,9 +1108,41 @@
             }
         },
         "/api/speakers/{id}": {
+            "get": {
+                "tags": ["Speakers"],
+                "summary": "Get speaker by id",
+                "description": "Path `id` is the speaker UUID (not the event UUID).",
+                "operationId": "getSpeaker",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Speaker UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/Speaker"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Speaker not found"}
+                }
+            },
             "put": {
-                "tags": ["Event Content"],
-                "summary": "Update speaker",
+                "tags": ["Speakers"],
+                "summary": "Update speaker by speaker id",
                 "operationId": "updateSpeaker",
                 "parameters": [
                     {
@@ -576,7 +1164,6 @@
                                     "title": {"type": "string"},
                                     "organization": {"type": "string"},
                                     "bio": {"type": "string"},
-                                    "photo": {"type": "string"},
                                     "email": {"type": "string", "format": "email"},
                                     "linkedin": {"type": "string"},
                                     "twitter": {"type": "string"},
@@ -584,16 +1171,47 @@
                                     "order": {"type": "integer"}
                                 }
                             }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string"},
+                                    "title": {"type": "string"},
+                                    "organization": {"type": "string"},
+                                    "bio": {"type": "string"},
+                                    "email": {"type": "string"},
+                                    "linkedin": {"type": "string"},
+                                    "twitter": {"type": "string"},
+                                    "topic_id": {"type": "string", "format": "uuid"},
+                                    "order": {"type": "integer"},
+                                    "photo": {"type": "string", "format": "binary"}
+                                }
+                            }
                         }
                     }
                 },
                 "responses": {
-                    "200": {"description": "Speaker updated successfully"},
-                    "404": {"description": "Speaker not found"}
+                    "200": {
+                        "description": "Speaker updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/Speaker"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Speaker not found"},
+                    "422": {"description": "Validation error"}
                 }
             },
             "delete": {
-                "tags": ["Event Content"],
+                "tags": ["Speakers"],
                 "summary": "Delete speaker",
                 "operationId": "deleteSpeaker",
                 "parameters": [
@@ -612,8 +1230,102 @@
             }
         },
         "/api/sponsors/{id}": {
+            "get": {
+                "tags": ["Sponsors"],
+                "summary": "Get sponsor by id",
+                "description": "Path `id` is the sponsor UUID (not the event UUID).",
+                "operationId": "getSponsor",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Sponsor UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/Sponsor"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Sponsor not found"}
+                }
+            },
+            "put": {
+                "tags": ["Sponsors"],
+                "summary": "Update sponsor by sponsor id",
+                "operationId": "updateSponsor",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Sponsor UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string"},
+                                    "tier": {"type": "string"},
+                                    "website": {"type": "string"},
+                                    "description": {"type": "string"},
+                                    "order": {"type": "integer"}
+                                }
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {"type": "string"},
+                                    "tier": {"type": "string"},
+                                    "website": {"type": "string"},
+                                    "description": {"type": "string"},
+                                    "order": {"type": "integer"},
+                                    "logo": {"type": "string", "format": "binary"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sponsor updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/Sponsor"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Sponsor not found"},
+                    "422": {"description": "Validation error"}
+                }
+            },
             "delete": {
-                "tags": ["Event Content"],
+                "tags": ["Sponsors"],
                 "summary": "Delete sponsor",
                 "operationId": "deleteSponsor",
                 "parameters": [
@@ -632,8 +1344,86 @@
             }
         },
         "/api/faqs/{id}": {
+            "get": {
+                "tags": ["FAQ"],
+                "summary": "Get FAQ by id",
+                "operationId": "getFaq",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "FAQ UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/FAQ"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "FAQ not found"}
+                }
+            },
+            "put": {
+                "tags": ["FAQ"],
+                "summary": "Update FAQ",
+                "operationId": "updateFaq",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "FAQ UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "question": {"type": "string"},
+                                    "answer": {"type": "string"},
+                                    "order": {"type": "integer"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "FAQ updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/FAQ"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "FAQ not found"},
+                    "422": {"description": "Validation error"}
+                }
+            },
             "delete": {
-                "tags": ["Event Content"],
+                "tags": ["FAQ"],
                 "summary": "Delete FAQ",
                 "operationId": "deleteFaq",
                 "parameters": [
@@ -648,6 +1438,613 @@
                 "responses": {
                     "200": {"description": "FAQ deleted successfully"},
                     "404": {"description": "FAQ not found"}
+                }
+            }
+        },
+        "/api/media": {
+            "get": {
+                "tags": ["Media"],
+                "summary": "List media for an event",
+                "description": "Required query `event_id` is the event UUID. Each item: `id`, `title`, `file_path`, `description`.",
+                "operationId": "listMedia",
+                "parameters": [
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/EventMedia"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Missing or invalid event_id"}
+                }
+            },
+            "post": {
+                "tags": ["Media"],
+                "summary": "Create media for an event",
+                "description": "Optional `type`: image, video, or document (default document). Response shape matches list items.",
+                "operationId": "createMedia",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["event_id", "file_path"],
+                                "properties": {
+                                    "event_id": {"type": "string", "format": "uuid"},
+                                    "title": {"type": "string", "nullable": true},
+                                    "file_path": {"type": "string", "example": "/media/2026/promo.mp4"},
+                                    "description": {"type": "string", "nullable": true},
+                                    "type": {"type": "string", "enum": ["image", "video", "document"]},
+                                    "order": {"type": "integer", "example": 1}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Media created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventMedia"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Validation error"}
+                }
+            }
+        },
+        "/api/media/{id}": {
+            "put": {
+                "tags": ["Media"],
+                "summary": "Update media",
+                "description": "Partial update: at least one of `title`, `file_path`, `description`.",
+                "operationId": "updateMedia",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Media UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {"type": "string", "nullable": true},
+                                    "file_path": {"type": "string"},
+                                    "description": {"type": "string", "nullable": true}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Media updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventMedia"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Media not found"},
+                    "422": {"description": "Validation error"}
+                }
+            }
+        },
+        "/api/resources": {
+            "get": {
+                "tags": ["Event Resources"],
+                "summary": "List event resources",
+                "description": "Returns rows from `event_resources`: id, event_id, title, description, file_path, file_type, url, created_at, updated_at. Filter by optional `event_id` (UUID) or `year`; omit both to list all.",
+                "operationId": "listEventResources",
+                "parameters": [
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Event UUID",
+                        "required": false,
+                        "schema": {"type": "string", "format": "uuid"}
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "description": "Event year (used when event_id is not set)",
+                        "required": false,
+                        "schema": {"type": "integer", "example": 2026}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/EventResourceRecord"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found (invalid event_id)"},
+                    "422": {"description": "Validation error"}
+                }
+            },
+            "post": {
+                "tags": ["Event Resources"],
+                "summary": "Create an event resource",
+                "operationId": "createEventResource",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["event_id", "title"],
+                                "properties": {
+                                    "event_id": {"type": "string", "format": "uuid"},
+                                    "title": {"type": "string", "example": "Event Program Guide"},
+                                    "description": {"type": "string", "nullable": true},
+                                    "file_path": {"type": "string", "nullable": true, "example": "/resources/2026/guide.pdf"},
+                                    "file_type": {"type": "string", "nullable": true, "example": "PDF"},
+                                    "url": {"type": "string", "format": "uri", "nullable": true}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventResourceRecord"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Validation error"}
+                }
+            }
+        },
+        "/api/resources/{id}": {
+            "get": {
+                "tags": ["Event Resources"],
+                "summary": "Get event resource by id",
+                "operationId": "getEventResource",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Resource UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventResourceRecord"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Resource not found"}
+                }
+            },
+            "put": {
+                "tags": ["Event Resources"],
+                "summary": "Update an event resource",
+                "operationId": "updateEventResource",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Resource UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "title": {"type": "string"},
+                                    "description": {"type": "string", "nullable": true},
+                                    "file_path": {"type": "string", "nullable": true},
+                                    "file_type": {"type": "string", "nullable": true},
+                                    "url": {"type": "string", "format": "uri", "nullable": true}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/EventResourceRecord"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Resource not found"},
+                    "422": {"description": "Validation error"}
+                }
+            },
+            "delete": {
+                "tags": ["Event Resources"],
+                "summary": "Delete an event resource",
+                "operationId": "deleteEventResource",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Resource UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {"description": "Deleted"},
+                    "404": {"description": "Resource not found"}
+                }
+            }
+        },
+        "/api/gallery": {
+            "get": {
+                "tags": ["Gallery"],
+                "summary": "List gallery images for an event",
+                "description": "Required query `event_id` is the event UUID.",
+                "operationId": "listGallery",
+                "parameters": [
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/GalleryImage"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Missing or invalid event_id"}
+                }
+            },
+            "post": {
+                "tags": ["Gallery"],
+                "summary": "Upload gallery images for an event",
+                "description": "Multipart form: `event_id` (text) and `images[]` file fields.",
+                "operationId": "createGalleryImages",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["event_id", "images"],
+                                "properties": {
+                                    "event_id": {"type": "string", "format": "uuid"},
+                                    "images": {
+                                        "type": "array",
+                                        "items": {"type": "string", "format": "binary"}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Images created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "message": {"type": "string"},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/GalleryImage"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Validation error"}
+                }
+            }
+        },
+        "/api/gallery/{id}": {
+            "get": {
+                "tags": ["Gallery"],
+                "summary": "Get gallery image by id",
+                "operationId": "getGalleryImage",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Gallery row UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/GalleryImage"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Not found"}
+                }
+            },
+            "put": {
+                "tags": ["Gallery"],
+                "summary": "Update gallery image",
+                "description": "JSON: `url` and/or `order`. Multipart: optional `image` file replaces the stored file.",
+                "operationId": "updateGalleryImage",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Gallery row UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "url": {"type": "string"},
+                                    "order": {"type": "integer"}
+                                }
+                            }
+                        },
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "url": {"type": "string"},
+                                    "order": {"type": "integer"},
+                                    "image": {"type": "string", "format": "binary"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {"$ref": "#/components/schemas/GalleryImage"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Not found"},
+                    "422": {"description": "Validation error"}
+                }
+            },
+            "delete": {
+                "tags": ["Gallery"],
+                "summary": "Delete gallery image",
+                "operationId": "deleteGalleryImage",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Gallery row UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {"description": "Deleted"},
+                    "404": {"description": "Not found"}
+                }
+            }
+        },
+        "/api/attendances": {
+            "get": {
+                "tags": ["Attendances"],
+                "summary": "List attendances for an event",
+                "description": "Required query `event_id` is the event UUID.",
+                "operationId": "listAttendances",
+                "parameters": [
+                    {
+                        "name": "event_id",
+                        "in": "query",
+                        "description": "Event UUID",
+                        "required": true,
+                        "schema": {"type": "string", "format": "uuid"}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "data": {
+                                            "type": "array",
+                                            "items": {"$ref": "#/components/schemas/Attendance"}
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Missing or invalid event_id"}
+                }
+            },
+            "post": {
+                "tags": ["Attendances"],
+                "summary": "Register or update attendance",
+                "description": "Upserts by `event_id` + `email`: creates a new row or updates the existing registration for that pair.",
+                "operationId": "registerAttendance",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "required": ["event_id", "name", "email"],
+                                "properties": {
+                                    "event_id": {"type": "string", "format": "uuid"},
+                                    "name": {"type": "string", "example": "John Doe"},
+                                    "email": {"type": "string", "format": "email", "example": "john@example.com"},
+                                    "phone": {"type": "string", "nullable": true},
+                                    "organization": {"type": "string", "nullable": true},
+                                    "registration_type": {"type": "string", "nullable": true, "example": "Regular"}
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Attendance already existed and was updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "message": {"type": "string"},
+                                        "data": {"$ref": "#/components/schemas/Attendance"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "Attendance registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {"type": "boolean", "example": true},
+                                        "message": {"type": "string"},
+                                        "data": {"$ref": "#/components/schemas/Attendance"}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {"description": "Event not found"},
+                    "422": {"description": "Validation error"}
                 }
             }
         },
@@ -815,10 +2212,196 @@
                     "id": {"type": "string", "format": "uuid", "example": "9b3d8f4e-7c1a-4d2b-9e5f-1a2b3c4d5e6f"},
                     "year": {"type": "integer", "example": 2026},
                     "title": {"type": "string", "example": "Annual Tech Conference 2026"},
+                    "cover_image": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Stored cover reference: absolute URL, `/storage/...` path, or relative path on the public disk.",
+                        "example": "https://cdn.example.com/events/2026-cover.jpg"
+                    },
+                    "cover_image_url": {
+                        "type": "string",
+                        "nullable": true,
+                        "readOnly": true,
+                        "description": "Resolved public URL for the cover image (computed from `cover_image`).",
+                        "example": "https://cdn.example.com/events/2026-cover.jpg"
+                    },
                     "location": {"type": "string", "example": "Convention Center"},
                     "start_date": {"type": "string", "format": "date", "example": "2026-06-01"},
                     "end_date": {"type": "string", "format": "date", "example": "2026-06-03"},
                     "is_published": {"type": "boolean", "example": true},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"},
+                    "summaries": {
+                        "type": "array",
+                        "description": "Event summaries — use the UI title **Event summaries**. Present when the event is loaded with relations (e.g. GET /api/events/{id}).",
+                        "items": {"$ref": "#/components/schemas/EventSummary"}
+                    },
+                    "programmes": {
+                        "type": "array",
+                        "description": "Event programmes (schedule). Present when the event is loaded with relations.",
+                        "items": {"$ref": "#/components/schemas/EventProgramme"}
+                    },
+                    "speakers": {
+                        "type": "array",
+                        "description": "Speakers for this event. Present when the event is loaded with relations.",
+                        "items": {"$ref": "#/components/schemas/Speaker"}
+                    },
+                    "sponsors": {
+                        "type": "array",
+                        "description": "Sponsors for this event. Present when the event is loaded with relations.",
+                        "items": {"$ref": "#/components/schemas/Sponsor"}
+                    },
+                    "themes": {
+                        "type": "array",
+                        "description": "Event themes — use the UI title **Event themes**. Present when the event is loaded with relations (e.g. GET /api/events/{id}).",
+                        "items": {"$ref": "#/components/schemas/EventTheme"}
+                    }
+                }
+            },
+            "EventResourceRecord": {
+                "type": "object",
+                "title": "Event Resources",
+                "description": "Row from the event_resources table.",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "event_id": {"type": "string", "format": "uuid"},
+                    "title": {"type": "string", "example": "Event Program Guide"},
+                    "description": {"type": "string", "nullable": true},
+                    "file_path": {"type": "string", "nullable": true, "example": "/resources/2026/guide.pdf"},
+                    "file_type": {"type": "string", "nullable": true, "example": "PDF"},
+                    "url": {"type": "string", "nullable": true},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"}
+                }
+            },
+            "EventMedia": {
+                "type": "object",
+                "title": "Media",
+                "description": "Event media as returned by GET/POST/PUT /api/media.",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "title": {"type": "string", "nullable": true},
+                    "file_path": {"type": "string", "example": "/media/2026/promo.mp4"},
+                    "description": {"type": "string", "nullable": true}
+                }
+            },
+            "EventProgramme": {
+                "type": "object",
+                "title": "Event programmes",
+                "description": "One programme (schedule) row for an event.",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "event_id": {"type": "string", "format": "uuid"},
+                    "title": {"type": "string", "example": "Opening keynote"},
+                    "description": {"type": "string", "nullable": true},
+                    "start_time": {"type": "string", "format": "date-time", "nullable": true},
+                    "end_time": {"type": "string", "format": "date-time", "nullable": true},
+                    "location": {"type": "string", "nullable": true},
+                    "speaker": {"type": "string", "nullable": true},
+                    "event_pdf": {"type": "string", "format": "uri", "nullable": true, "description": "Google Drive link to the programme PDF"},
+                    "order": {"type": "integer", "nullable": true},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"}
+                }
+            },
+            "Speaker": {
+                "type": "object",
+                "title": "Speakers",
+                "description": "Event speaker",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "event_id": {"type": "string", "format": "uuid"},
+                    "topic_id": {"type": "string", "format": "uuid", "nullable": true},
+                    "name": {"type": "string", "example": "Dr. Jane Smith"},
+                    "title": {"type": "string", "nullable": true},
+                    "organization": {"type": "string", "nullable": true},
+                    "bio": {"type": "string", "nullable": true},
+                    "photo": {"type": "string", "nullable": true},
+                    "email": {"type": "string", "nullable": true},
+                    "linkedin": {"type": "string", "nullable": true},
+                    "twitter": {"type": "string", "nullable": true},
+                    "order": {"type": "integer", "nullable": true},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"}
+                }
+            },
+            "Sponsor": {
+                "type": "object",
+                "title": "Sponsors",
+                "description": "Event sponsor",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "event_id": {"type": "string", "format": "uuid"},
+                    "name": {"type": "string", "example": "Tech Corporation"},
+                    "tier": {"type": "string", "nullable": true},
+                    "logo": {"type": "string", "nullable": true},
+                    "website": {"type": "string", "nullable": true},
+                    "description": {"type": "string", "nullable": true},
+                    "order": {"type": "integer", "nullable": true},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"}
+                }
+            },
+            "EventSummary": {
+                "type": "object",
+                "title": "Event summaries",
+                "description": "One summary row. Lists use the UI title **Event summaries**; payload field is `summary` (text).",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "event_id": {"type": "string", "format": "uuid"},
+                    "summary": {"type": "string", "example": "Join us for the annual conference..."},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"}
+                }
+            },
+            "EventTheme": {
+                "type": "object",
+                "title": "Event themes",
+                "description": "One theme row. Lists on the event use the UI title **Event themes**.",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "event_id": {"type": "string", "format": "uuid"},
+                    "theme": {"type": "string", "example": "Innovation"},
+                    "description": {"type": "string", "nullable": true, "example": "Focus on emerging technology"},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"}
+                }
+            },
+            "FAQ": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "event_id": {"type": "string", "format": "uuid"},
+                    "question": {"type": "string"},
+                    "answer": {"type": "string"},
+                    "order": {"type": "integer"},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"}
+                }
+            },
+            "GalleryImage": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "event_id": {"type": "string", "format": "uuid"},
+                    "url": {"type": "string", "nullable": true, "description": "Public URL for the image"},
+                    "order": {"type": "integer"},
+                    "created_at": {"type": "string", "format": "date-time"},
+                    "updated_at": {"type": "string", "format": "date-time"}
+                }
+            },
+            "Attendance": {
+                "type": "object",
+                "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "event_id": {"type": "string", "format": "uuid"},
+                    "name": {"type": "string"},
+                    "email": {"type": "string", "format": "email"},
+                    "phone": {"type": "string", "nullable": true},
+                    "organization": {"type": "string", "nullable": true},
+                    "registration_type": {"type": "string", "nullable": true},
+                    "checked_in": {"type": "boolean"},
+                    "checked_in_at": {"type": "string", "format": "date-time", "nullable": true},
                     "created_at": {"type": "string", "format": "date-time"},
                     "updated_at": {"type": "string", "format": "date-time"}
                 }
@@ -829,6 +2412,12 @@
                 "properties": {
                     "year": {"type": "integer", "example": 2026},
                     "title": {"type": "string", "example": "Annual Tech Conference 2026"},
+                    "cover_image": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "Public URL or `/storage/...` path to use as cover (not used when uploading `cover_image` as a file in multipart). On PUT, send null to clear.",
+                        "example": "https://cdn.example.com/events/2026-cover.jpg"
+                    },
                     "location": {"type": "string", "example": "Convention Center"},
                     "start_date": {"type": "string", "format": "date", "example": "2026-06-01"},
                     "end_date": {"type": "string", "format": "date", "example": "2026-06-03"},
@@ -885,8 +2474,44 @@
             "description": "Topic management endpoints - one topic can have multiple speakers"
         },
         {
-            "name": "Event Content",
-            "description": "Event content management endpoints (summaries, themes, speakers, etc.)"
+            "name": "Speakers",
+            "description": "Event speakers: list and create by event id, update and delete by speaker id"
+        },
+        {
+            "name": "Sponsors",
+            "description": "Event sponsors: list and create by event id, update and delete by sponsor id"
+        },
+        {
+            "name": "FAQ",
+            "description": "Event FAQs: list by event UUID, create, update, delete by id"
+        },
+        {
+            "name": "Gallery",
+            "description": "Event gallery images: list by event UUID, upload, update, delete by id"
+        },
+        {
+            "name": "Media",
+            "description": "Event media (videos, documents, images): list by event UUID; create and update; responses use id, title, file_path, description"
+        },
+        {
+            "name": "Attendances",
+            "description": "Event attendance registrations: list by event UUID, register (upsert by email), get, update, delete by id"
+        },
+        {
+            "name": "Event Resources",
+            "description": "event_resources table: list (by event_id or year), create, get by id, update, delete"
+        },
+        {
+            "name": "Event programmes",
+            "description": "Schedule items: list and create by event id, update and delete by programme id"
+        },
+        {
+            "name": "Event summaries",
+            "description": "Event summary text (list by event, update by id)"
+        },
+        {
+            "name": "Event themes",
+            "description": "Event themes and descriptions (list, create, update, delete)"
         }
     ]
 }

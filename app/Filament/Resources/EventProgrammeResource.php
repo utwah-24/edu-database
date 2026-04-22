@@ -26,6 +26,12 @@ class EventProgrammeResource extends Resource
             Forms\Components\DateTimePicker::make('end_time')->afterOrEqual('start_time'),
             Forms\Components\TextInput::make('location')->maxLength(255),
             Forms\Components\TextInput::make('speaker')->maxLength(255),
+            Forms\Components\TextInput::make('event_pdf')
+                ->label('Event PDF (Google Drive)')
+                ->url()
+                ->maxLength(2048)
+                ->placeholder('https://drive.google.com/...')
+                ->columnSpanFull(),
             Forms\Components\TextInput::make('order')->numeric()->default(0)->required(),
         ]);
     }
@@ -37,6 +43,12 @@ class EventProgrammeResource extends Resource
             Tables\Columns\TextColumn::make('title')->searchable(),
             Tables\Columns\TextColumn::make('start_time')->dateTime(),
             Tables\Columns\TextColumn::make('location')->limit(30),
+            Tables\Columns\TextColumn::make('event_pdf')
+                ->label('PDF')
+                ->limit(40)
+                ->url(fn (?string $state): ?string => filled($state) ? $state : null)
+                ->openUrlInNewTab()
+                ->toggleable(),
             Tables\Columns\TextColumn::make('order')->sortable(),
         ])->actions([
             Tables\Actions\EditAction::make(),

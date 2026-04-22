@@ -68,17 +68,6 @@ Content-Type: application/json
 }
 ```
 
-### Add Theme
-```http
-POST /events/{eventId}/themes
-Content-Type: application/json
-
-{
-  "theme": "Innovation & Technology",
-  "description": "Exploring future trends"
-}
-```
-
 ### Add Programme Item
 ```http
 POST /events/{eventId}/programmes
@@ -141,6 +130,26 @@ Content-Type: application/json
 ```
 
 ## ✏️ Update Content
+
+## 🏷️ Event themes
+
+Use title: **Event themes**
+
+Theme data is returned inside event responses:
+
+```http
+GET /events/current
+GET /events/{id}
+GET /events/year/{year}
+```
+
+`data.themes[]` fields:
+- `id`
+- `event_id`
+- `theme`
+- `description`
+- `created_at`
+- `updated_at`
 
 ### Update Programme
 ```http
@@ -258,7 +267,7 @@ curl -X POST http://localhost:8000/api/events/1/speakers \
 ### Setup New Event
 1. POST /events (create event)
 2. POST /events/{id}/summaries (add description)
-3. POST /events/{id}/themes (add themes)
+3. GET /events/{id} (pull event themes from `themes`)
 4. POST /events/{id}/programmes (add agenda items)
 5. POST /events/{id}/speakers (add speakers)
 6. POST /events/{id}/sponsors (add sponsors)
