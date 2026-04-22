@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use OpenApi\Annotations as OA;
 
 class EventController extends Controller
 {
@@ -68,6 +71,7 @@ class EventController extends Controller
         $validator = Validator::make($request->all(), [
             'year' => 'required|integer|unique:events,year',
             'title' => 'required|string|max:255',
+            'cover_image' => 'nullable|image|max:5120',
             'location' => 'nullable|string|max:255',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -81,7 +85,12 @@ class EventController extends Controller
             ], 422);
         }
 
-        $event = Event::create($request->all());
+        $payload = $request->except('cover_image');
+        if ($request->hasFile('cover_image')) {
+            $payload['cover_image'] = $this->storeCoverImageAndGetUrl($request->file('cover_image'), (string) $request->year);
+        }
+
+        $event = Event::create($payload);
 
         return response()->json([
             'success' => true,
@@ -273,6 +282,7 @@ class EventController extends Controller
         $validator = Validator::make($request->all(), [
             'year' => 'sometimes|integer|unique:events,year,' . $id,
             'title' => 'sometimes|string|max:255',
+            'cover_image' => 'nullable|image|max:5120',
             'location' => 'nullable|string|max:255',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -286,7 +296,14 @@ class EventController extends Controller
             ], 422);
         }
 
-        $event->update($request->all());
+        $payload = $request->except('cover_image');
+        if ($request->hasFile('cover_image')) {
+            $this->deleteIfLocalStorageUrl($event->cover_image);
+            $eventYear = (string) ($payload['year'] ?? $event->year);
+            $payload['cover_image'] = $this->storeCoverImageAndGetUrl($request->file('cover_image'), $eventYear);
+        }
+
+        $event->update($payload);
 
         return response()->json([
             'success' => true,
@@ -323,11 +340,39 @@ class EventController extends Controller
             ], 404);
         }
 
+        $this->deleteIfLocalStorageUrl($event->cover_image);
         $event->delete();
 
         return response()->json([
             'success' => true,
             'message' => 'Event deleted successfully'
         ]);
+    }
+
+    private function storeCoverImageAndGetUrl($file, string $year): string
+    {
+        $original = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeBase = Str::slug($original);
+        if (blank($safeBase)) {
+            $safeBase = 'cover-image';
+        }
+
+        $extension = $file->getClientOriginalExtension();
+        $fileName = $safeBase . '-' . now()->format('YmdHis') . '-' . Str::random(6) . '.' . $extension;
+        $path = $file->storeAs("events/{$year}", $fileName, 'public');
+
+        return Storage::disk('public')->url($path);
+    }
+
+    private function deleteIfLocalStorageUrl(?string $url): void
+    {
+        if (!filled($url)) {
+            return;
+        }
+
+        if (str_starts_with($url, '/storage/')) {
+            $relativePath = substr($url, strlen('/storage/'));
+            Storage::disk('public')->delete($relativePath);
+        }
     }
 }

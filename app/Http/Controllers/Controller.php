@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use OpenApi\Annotations as OA;
+
 /**
  * @OA\OpenApi(
  *     @OA\Info(
@@ -17,7 +19,7 @@ namespace App\Http\Controllers;
  *         description="Local Development Server"
  *     ),
  *     @OA\Server(
- *         url="http://localhost",
+ *         url="http://eduevent.e-saloon.online",
  *         description="Production Server"
  *     )
  * )
@@ -91,6 +93,10 @@ namespace App\Http\Controllers;
  * @OA\Tag(
  *     name="Event Content",
  *     description="Event content management endpoints (summaries, themes, speakers, etc.)"
+ * )
+ *
+ * @OA\PathItem(
+ *     path="/api/events"
  * )
  */
 abstract class Controller

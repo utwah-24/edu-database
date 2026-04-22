@@ -15,7 +15,10 @@ use App\Models\Sponsor;
 use App\Models\Gallery;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use OpenApi\Annotations as OA;
 
 class EventContentController extends Controller
 {
@@ -237,7 +240,7 @@ class EventContentController extends Controller
             'title' => 'nullable|string|max:255',
             'organization' => 'nullable|string|max:255',
             'bio' => 'nullable|string',
-            'photo' => 'nullable|string',
+            'photo' => 'nullable|image|max:5120',
             'email' => 'nullable|email',
             'linkedin' => 'nullable|string',
             'twitter' => 'nullable|string',
@@ -248,10 +251,13 @@ class EventContentController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        $speaker = Speaker::create(array_merge(
-            ['event_id' => $eventId],
-            $request->all()
-        ));
+        $payload = array_merge(['event_id' => $eventId], $request->except('photo'));
+
+        if ($request->hasFile('photo')) {
+            $payload['photo'] = $this->storeImageAndGetUrl($request->file('photo'), "speakers/{$eventId}");
+        }
+
+        $speaker = Speaker::create($payload);
 
         return response()->json(['success' => true, 'data' => $speaker], 201);
     }
@@ -271,7 +277,30 @@ class EventContentController extends Controller
         if (!$speaker) {
             return response()->json(['success' => false, 'message' => 'Speaker not found'], 404);
         }
-        $speaker->update($request->all());
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|string|max:255',
+            'title' => 'nullable|string|max:255',
+            'organization' => 'nullable|string|max:255',
+            'bio' => 'nullable|string',
+            'photo' => 'nullable|image|max:5120',
+            'email' => 'nullable|email',
+            'linkedin' => 'nullable|string',
+            'twitter' => 'nullable|string',
+            'order' => 'nullable|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $payload = $request->except('photo');
+        if ($request->hasFile('photo')) {
+            $this->deleteIfLocalStorageUrl($speaker->photo);
+            $payload['photo'] = $this->storeImageAndGetUrl($request->file('photo'), "speakers/{$speaker->event_id}");
+        }
+
+        $speaker->update($payload);
         return response()->json(['success' => true, 'data' => $speaker]);
     }
 
@@ -290,6 +319,7 @@ class EventContentController extends Controller
         if (!$speaker) {
             return response()->json(['success' => false, 'message' => 'Speaker not found'], 404);
         }
+        $this->deleteIfLocalStorageUrl($speaker->photo);
         $speaker->delete();
         return response()->json(['success' => true, 'message' => 'Speaker deleted successfully']);
     }
@@ -316,7 +346,7 @@ class EventContentController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'tier' => 'nullable|string|max:255',
-            'logo' => 'nullable|string',
+            'logo' => 'nullable|image|max:5120',
             'website' => 'nullable|string',
             'description' => 'nullable|string',
             'order' => 'nullable|integer'
@@ -326,10 +356,12 @@ class EventContentController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        $sponsor = Sponsor::create(array_merge(
-            ['event_id' => $eventId],
-            $request->all()
-        ));
+        $payload = array_merge(['event_id' => $eventId], $request->except('logo'));
+        if ($request->hasFile('logo')) {
+            $payload['logo'] = $this->storeImageAndGetUrl($request->file('logo'), "sponsors/{$eventId}");
+        }
+
+        $sponsor = Sponsor::create($payload);
 
         return response()->json(['success' => true, 'data' => $sponsor], 201);
     }
@@ -349,8 +381,40 @@ class EventContentController extends Controller
         if (!$sponsor) {
             return response()->json(['success' => false, 'message' => 'Sponsor not found'], 404);
         }
+        $this->deleteIfLocalStorageUrl($sponsor->logo);
         $sponsor->delete();
         return response()->json(['success' => true, 'message' => 'Sponsor deleted successfully']);
+    }
+
+    public function updateSponsor(Request $request, $id)
+    {
+        $sponsor = Sponsor::find($id);
+        if (!$sponsor) {
+            return response()->json(['success' => false, 'message' => 'Sponsor not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|string|max:255',
+            'tier' => 'nullable|string|max:255',
+            'logo' => 'nullable|image|max:5120',
+            'website' => 'nullable|string',
+            'description' => 'nullable|string',
+            'order' => 'nullable|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $payload = $request->except('logo');
+        if ($request->hasFile('logo')) {
+            $this->deleteIfLocalStorageUrl($sponsor->logo);
+            $payload['logo'] = $this->storeImageAndGetUrl($request->file('logo'), "sponsors/{$sponsor->event_id}");
+        }
+
+        $sponsor->update($payload);
+
+        return response()->json(['success' => true, 'data' => $sponsor]);
     }
 
     // ==================== FAQS ====================
@@ -405,5 +469,234 @@ class EventContentController extends Controller
         }
         $faq->delete();
         return response()->json(['success' => true, 'message' => 'FAQ deleted successfully']);
+    }
+
+    // ==================== EVENT RESOURCES ====================
+
+    /**
+     * @OA\Get(
+     *     path="/api/resources",
+     *     tags={"Event Content"},
+     *     summary="List event resources",
+     *     description="Returns all resources, optionally filtered by event year.",
+     *     @OA\Parameter(
+     *         name="year",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=2026)
+     *     ),
+     *     @OA\Response(response=200, description="Resources retrieved successfully"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
+    public function indexResources(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'year' => 'nullable|integer|min:1900|max:2100',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $query = EventResource::query()->with(['event:id,year,title']);
+
+        if ($request->filled('year')) {
+            $year = (int) $request->query('year');
+            $query->whereHas('event', fn ($q) => $q->where('year', $year));
+        }
+
+        $items = $query->latest()->get();
+
+        $data = $items->map(fn (EventResource $resource) => [
+            'id' => $resource->id,
+            'event_id' => $resource->event_id,
+            'event_year' => $resource->event?->year,
+            'event_title' => $resource->event?->title,
+            'title' => $resource->title,
+            'description' => $resource->description,
+            'file_path' => $resource->file_path,
+            'file_type' => $resource->file_type,
+            'url' => $resource->url,
+            'created_at' => $resource->created_at,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
+    }
+
+    // ==================== GALLERY (image URLs per event) ====================
+
+    /**
+     * @OA\Get(
+     *     path="/api/gallery",
+     *     tags={"Event Content"},
+     *     summary="List gallery images by event year",
+     *     @OA\Parameter(name="year", in="query", required=true, @OA\Schema(type="integer", example=2026)),
+     *     @OA\Response(response=200, description="Gallery images for events in that year")
+     * )
+     */
+    public function indexGalleryByYear(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'year' => 'required|integer|min:1900|max:2100',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $year = (int) $request->query('year');
+
+        $items = Gallery::query()
+            ->with(['event:id,year,title'])
+            ->whereHas('event', fn ($q) => $q->where('year', $year))
+            ->orderBy('order')
+            ->get();
+
+        $data = $items->map(fn (Gallery $g) => [
+            'id' => $g->id,
+            'event_id' => $g->event_id,
+            'year' => $g->event->year,
+            'url' => $g->url,
+            'order' => $g->order,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+        ]);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/events/{eventId}/gallery",
+     *     tags={"Event Content"},
+     *     summary="Upload one or more gallery images to an event",
+     *     @OA\Parameter(name="eventId", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 required={"images"},
+     *                 @OA\Property(
+     *                     property="images[]",
+     *                     type="array",
+     *                     @OA\Items(type="string", format="binary")
+     *                 )
+     *             )
+     *         ),
+     *         @OA\JsonContent(
+     *             required={"images"},
+     *             @OA\Property(
+     *                 property="images",
+     *                 type="array",
+     *                 @OA\Items(type="string")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Images created"),
+     *     @OA\Response(response=404, description="Event not found"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
+    public function storeGallery(Request $request, string $eventId)
+    {
+        $event = Event::find($eventId);
+        if (!$event) {
+            return response()->json(['success' => false, 'message' => 'Event not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'images' => 'required|array|min:1',
+            'images.*' => 'required|image|max:5120',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $images = $request->file('images', []);
+        $baseOrder = (int) Gallery::where('event_id', $eventId)->max('order');
+
+        $created = [];
+        foreach ($images as $i => $image) {
+            $path = $this->storeImageWithSafeName($image, "gallery/{$eventId}");
+            $url = Storage::disk('public')->url($path);
+            $created[] = Gallery::create([
+                'event_id' => $eventId,
+                'url' => $url,
+                'order' => $baseOrder + $i + 1,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => count($created) . ' image(s) added',
+            'data' => $created,
+        ], 201);
+    }
+
+    /**
+     * @OA\Delete(
+     *     path="/api/gallery/{id}",
+     *     tags={"Event Content"},
+     *     summary="Remove a gallery image",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
+     *     @OA\Response(response=200, description="Deleted"),
+     *     @OA\Response(response=404, description="Not found")
+     * )
+     */
+    public function destroyGallery(string $id)
+    {
+        $row = Gallery::find($id);
+        if (!$row) {
+            return response()->json(['success' => false, 'message' => 'Gallery image not found'], 404);
+        }
+
+        if (str_starts_with($row->url, '/storage/')) {
+            $relativePath = substr($row->url, strlen('/storage/'));
+            Storage::disk('public')->delete($relativePath);
+        }
+
+        $row->delete();
+
+        return response()->json(['success' => true, 'message' => 'Gallery image deleted successfully']);
+    }
+
+    private function storeImageAndGetUrl($file, string $directory): string
+    {
+        $path = $this->storeImageWithSafeName($file, $directory);
+
+        return Storage::disk('public')->url($path);
+    }
+
+    private function storeImageWithSafeName($file, string $directory): string
+    {
+        $original = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeBase = Str::slug($original);
+        if (blank($safeBase)) {
+            $safeBase = 'image';
+        }
+
+        $extension = $file->getClientOriginalExtension();
+        $fileName = $safeBase . '-' . now()->format('YmdHis') . '-' . Str::random(6) . '.' . $extension;
+
+        return $file->storeAs($directory, $fileName, 'public');
+    }
+
+    private function deleteIfLocalStorageUrl(?string $url): void
+    {
+        if (!filled($url)) {
+            return;
+        }
+
+        if (str_starts_with($url, '/storage/')) {
+            $relativePath = substr($url, strlen('/storage/'));
+            Storage::disk('public')->delete($relativePath);
+        }
     }
 }

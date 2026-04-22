@@ -278,28 +278,22 @@ class EventSeeder extends Seeder
             'order' => 2,
         ]);
 
-        // Add gallery images for 2024
+        // Add gallery images for 2024 (URL-only)
         Gallery::create([
             'event_id' => $event2024->id,
-            'title' => 'Opening Ceremony',
-            'image_path' => '/gallery/2024/opening-ceremony.jpg',
-            'caption' => 'Attendees gathering for the opening ceremony',
+            'url' => '/gallery/2024/opening-ceremony.jpg',
             'order' => 1,
         ]);
 
         Gallery::create([
             'event_id' => $event2024->id,
-            'title' => 'Workshop Session',
-            'image_path' => '/gallery/2024/workshop-1.jpg',
-            'caption' => 'Participants engaged in hands-on workshop',
+            'url' => '/gallery/2024/workshop-1.jpg',
             'order' => 2,
         ]);
 
         Gallery::create([
             'event_id' => $event2024->id,
-            'title' => 'Networking Break',
-            'image_path' => '/gallery/2024/networking.jpg',
-            'caption' => 'Attendees networking during coffee break',
+            'url' => '/gallery/2024/networking.jpg',
             'order' => 3,
         ]);
 

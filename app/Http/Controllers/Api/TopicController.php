@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Annotations as OA;
 
 class TopicController extends Controller
 {
@@ -22,6 +23,13 @@ class TopicController extends Controller
      *         required=false,
      *         @OA\Schema(type="string", format="uuid")
      *     ),
+     *     @OA\Parameter(
+     *         name="year",
+     *         in="query",
+     *         description="Filter topics by event year",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=2026)
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
@@ -34,10 +42,27 @@ class TopicController extends Controller
      */
     public function index(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'event_id' => 'nullable|exists:events,id',
+            'year' => 'nullable|integer|min:1900|max:2100',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
         $query = Topic::with(['speakers', 'event']);
 
-        if ($request->has('event_id')) {
+        if ($request->filled('event_id')) {
             $query->where('event_id', $request->event_id);
+        }
+
+        if ($request->filled('year')) {
+            $year = (int) $request->query('year');
+            $query->whereHas('event', fn ($q) => $q->where('year', $year));
         }
 
         $topics = $query->orderBy('topic_date')->get();

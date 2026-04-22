@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Support\Facades\Storage;
 
 class Event extends Model
 {
@@ -12,6 +13,7 @@ class Event extends Model
     protected $fillable = [
         'year',
         'title',
+        'cover_image',
         'location',
         'start_date',
         'end_date',
@@ -23,6 +25,23 @@ class Event extends Model
         'end_date' => 'date',
         'is_published' => 'boolean'
     ];
+
+    protected $appends = [
+        'cover_image_url',
+    ];
+
+    public function getCoverImageUrlAttribute(): ?string
+    {
+        if (!filled($this->cover_image)) {
+            return null;
+        }
+
+        if (str_starts_with($this->cover_image, 'http://') || str_starts_with($this->cover_image, 'https://') || str_starts_with($this->cover_image, '/storage/')) {
+            return $this->cover_image;
+        }
+
+        return Storage::disk('public')->url($this->cover_image);
+    }
 
     // Relationships
     public function summaries()

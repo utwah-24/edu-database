@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\EventContentController;
 use App\Http\Controllers\Api\TopicController;
@@ -15,6 +16,11 @@ use App\Http\Controllers\Api\TopicController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::get('/gallery', [EventContentController::class, 'indexGalleryByYear']);
+Route::get('/resources', [EventContentController::class, 'indexResources']);
+Route::delete('/gallery/{id}', [EventContentController::class, 'destroyGallery']);
+Route::post('/attendances', [AttendanceController::class, 'store']);
 
 // Event Routes
 Route::prefix('events')->group(function () {
@@ -36,6 +42,7 @@ Route::prefix('events')->group(function () {
     Route::post('/{eventId}/speakers', [EventContentController::class, 'storeSpeaker']);
     Route::post('/{eventId}/sponsors', [EventContentController::class, 'storeSponsor']);
     Route::post('/{eventId}/faqs', [EventContentController::class, 'storeFaq']);
+    Route::post('/{eventId}/gallery', [EventContentController::class, 'storeGallery']);
 });
 
 // Content management routes
@@ -48,6 +55,7 @@ Route::delete('/programmes/{id}', [EventContentController::class, 'destroyProgra
 Route::put('/speakers/{id}', [EventContentController::class, 'updateSpeaker']);
 Route::delete('/speakers/{id}', [EventContentController::class, 'destroySpeaker']);
 
+Route::put('/sponsors/{id}', [EventContentController::class, 'updateSponsor']);
 Route::delete('/sponsors/{id}', [EventContentController::class, 'destroySponsor']);
 Route::delete('/faqs/{id}', [EventContentController::class, 'destroyFaq']);
 
