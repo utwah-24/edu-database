@@ -37,6 +37,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\EventThemeResource::class,
                 \App\Filament\Resources\EventSummaryResource::class,
                 \App\Filament\Resources\EventProgrammeResource::class,
+                \App\Filament\Resources\MediaResource::class,
                 \App\Filament\Resources\EventResourceFileResource::class,
                 \App\Filament\Resources\FAQResource::class,
                 \App\Filament\Resources\AttendanceResource::class,
