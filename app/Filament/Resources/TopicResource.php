@@ -18,6 +18,12 @@ class TopicResource extends Resource
 
     protected static ?string $navigationGroup = 'Event Management';
 
+    protected static ?string $navigationLabel = 'Theme';
+
+    protected static ?string $modelLabel = 'Theme';
+
+    protected static ?string $pluralModelLabel = 'Themes';
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -52,6 +58,7 @@ class TopicResource extends Resource
                     ->label('Event')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('topic_date')
+                    ->label('Theme date')
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('order')

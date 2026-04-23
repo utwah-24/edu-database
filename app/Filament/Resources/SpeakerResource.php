@@ -22,7 +22,7 @@ class SpeakerResource extends Resource
     {
         return $form->schema([
             Forms\Components\Select::make('event_id')->relationship('event', 'title')->required()->searchable()->preload(),
-            Forms\Components\Select::make('topic_id')->relationship('topic', 'title')->searchable()->preload(),
+            Forms\Components\Select::make('topic_id')->label('Theme')->relationship('topic', 'title')->searchable()->preload(),
             Forms\Components\TextInput::make('name')->required()->maxLength(255),
             Forms\Components\TextInput::make('title')->maxLength(255),
             Forms\Components\TextInput::make('organization')->maxLength(255),
@@ -51,7 +51,7 @@ class SpeakerResource extends Resource
         return $table->columns([
             Tables\Columns\TextColumn::make('name')->searchable(),
             Tables\Columns\TextColumn::make('event.year')->label('Year')->sortable(),
-            Tables\Columns\TextColumn::make('topic.title')->label('Topic')->limit(30),
+            Tables\Columns\TextColumn::make('topic.title')->label('Theme')->limit(30),
             Tables\Columns\TextColumn::make('organization')->limit(30),
             Tables\Columns\TextColumn::make('order')->sortable(),
         ])->actions([

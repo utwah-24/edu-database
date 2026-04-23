@@ -16,6 +16,8 @@ class EventThemeResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-swatch';
     protected static ?string $navigationGroup = 'Event Management';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Form $form): Form
     {
         return $form->schema([
