@@ -23,6 +23,12 @@ class SpeakerResource extends Resource
         return $form->schema([
             Forms\Components\Select::make('event_id')->relationship('event', 'title')->required()->searchable()->preload(),
             Forms\Components\Select::make('topic_id')->label('Theme')->relationship('topic', 'title')->searchable()->preload(),
+            Forms\Components\Toggle::make('is_key_speaker')
+                ->label('Key Speaker')
+                ->default(false),
+            Forms\Components\Toggle::make('is_session_leader')
+                ->label('Session Leader')
+                ->default(false),
             Forms\Components\TextInput::make('name')->required()->maxLength(255),
             Forms\Components\TextInput::make('title')->maxLength(255),
             Forms\Components\TextInput::make('organization')->maxLength(255),
@@ -52,6 +58,12 @@ class SpeakerResource extends Resource
             Tables\Columns\TextColumn::make('name')->searchable(),
             Tables\Columns\TextColumn::make('event.year')->label('Year')->sortable(),
             Tables\Columns\TextColumn::make('topic.title')->label('Theme')->limit(30),
+            Tables\Columns\IconColumn::make('is_key_speaker')
+                ->label('Key')
+                ->boolean(),
+            Tables\Columns\IconColumn::make('is_session_leader')
+                ->label('Leader')
+                ->boolean(),
             Tables\Columns\TextColumn::make('organization')->limit(30),
             Tables\Columns\TextColumn::make('order')->sortable(),
         ])->actions([

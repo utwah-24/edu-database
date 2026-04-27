@@ -809,6 +809,8 @@ class EventContentController extends Controller
      *             @OA\Property(property="linkedin", type="string"),
      *             @OA\Property(property="twitter", type="string"),
      *             @OA\Property(property="topic_id", type="string", format="uuid"),
+     *             @OA\Property(property="is_key_speaker", type="boolean", example=false),
+     *             @OA\Property(property="is_session_leader", type="boolean", example=false),
      *             @OA\Property(property="order", type="integer")
      *         )
      *     ),
@@ -837,6 +839,8 @@ class EventContentController extends Controller
             'linkedin' => 'nullable|string',
             'twitter' => 'nullable|string',
             'topic_id' => 'nullable|uuid',
+            'is_key_speaker' => 'nullable|boolean',
+            'is_session_leader' => 'nullable|boolean',
             'order' => 'nullable|integer',
         ]);
 
@@ -851,7 +855,7 @@ class EventContentController extends Controller
 
         $payload = array_merge(
             ['event_id' => $eventId],
-            $request->only(['name', 'title', 'organization', 'bio', 'email', 'linkedin', 'twitter', 'topic_id', 'order'])
+            $request->only(['name', 'title', 'organization', 'bio', 'email', 'linkedin', 'twitter', 'topic_id', 'is_key_speaker', 'is_session_leader', 'order'])
         );
 
         if ($request->hasFile('photo')) {
@@ -880,6 +884,8 @@ class EventContentController extends Controller
      *             @OA\Property(property="linkedin", type="string"),
      *             @OA\Property(property="twitter", type="string"),
      *             @OA\Property(property="topic_id", type="string", format="uuid"),
+     *             @OA\Property(property="is_key_speaker", type="boolean", example=false),
+     *             @OA\Property(property="is_session_leader", type="boolean", example=false),
      *             @OA\Property(property="order", type="integer")
      *         )
      *     ),
@@ -912,6 +918,8 @@ class EventContentController extends Controller
             'linkedin' => 'nullable|string',
             'twitter' => 'nullable|string',
             'topic_id' => 'nullable|uuid',
+            'is_key_speaker' => 'nullable|boolean',
+            'is_session_leader' => 'nullable|boolean',
             'order' => 'nullable|integer',
         ]);
 
@@ -919,7 +927,7 @@ class EventContentController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        $payload = $request->only(['name', 'title', 'organization', 'bio', 'email', 'linkedin', 'twitter', 'topic_id', 'order']);
+        $payload = $request->only(['name', 'title', 'organization', 'bio', 'email', 'linkedin', 'twitter', 'topic_id', 'is_key_speaker', 'is_session_leader', 'order']);
         if ($request->hasFile('photo')) {
             $this->deleteIfLocalStorageUrl($speaker->photo);
             $payload['photo'] = $this->storeImageAndGetUrl($request->file('photo'), "speakers/{$speaker->event_id}");
@@ -972,6 +980,8 @@ class EventContentController extends Controller
             'email' => $speaker->email,
             'linkedin' => $speaker->linkedin,
             'twitter' => $speaker->twitter,
+            'is_key_speaker' => (bool) $speaker->is_key_speaker,
+            'is_session_leader' => (bool) $speaker->is_session_leader,
             'order' => $speaker->order,
             'created_at' => $speaker->created_at,
             'updated_at' => $speaker->updated_at,

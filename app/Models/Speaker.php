@@ -12,6 +12,8 @@ class Speaker extends Model
     protected $fillable = [
         'event_id',
         'topic_id',
+        'is_key_speaker',
+        'is_session_leader',
         'name',
         'title',
         'organization',
@@ -21,6 +23,11 @@ class Speaker extends Model
         'linkedin',
         'twitter',
         'order'
+    ];
+
+    protected $casts = [
+        'is_key_speaker' => 'boolean',
+        'is_session_leader' => 'boolean',
     ];
 
     public function event()
