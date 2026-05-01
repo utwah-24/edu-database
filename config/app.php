@@ -55,6 +55,11 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
 
     /*
+    | Base URL for resolving public storage paths (e.g. production CDN) when files are not on this host.
+    */
+    'image_base_url' => env('IMAGE_BASE_URL', ''),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------

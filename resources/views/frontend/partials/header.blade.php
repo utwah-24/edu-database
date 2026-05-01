@@ -13,29 +13,31 @@
                     </svg>
                 </button>
                 <a href="{{ route('frontend.home') }}" class="shrink-0">
-                    <img src="/storage/logos/Logo2.png" alt="Tanzania national emblem" class="h-8 w-auto max-h-8 object-contain object-center sm:h-14 sm:max-h-[60px] md:h-[4.5rem] md:max-h-[72px]">
+                    <img src="{{ asset('logos/Logo2.png') }}" alt="Tanzania national emblem" class="h-8 w-auto max-h-8 object-contain object-center sm:h-14 sm:max-h-[60px] md:h-[4.5rem] md:max-h-[72px]">
                 </a>
             </div>
 
-            <a href="{{ route('frontend.home') }}" class="hidden sm:block col-start-2 row-start-1 sm:col-span-1 sm:row-start-1 sm:col-start-2 justify-self-center text-center min-w-0 max-w-[min(100%,360px)] sm:max-w-xl md:max-w-2xl lg:max-w-4xl px-2">
-                <p class="font-sans text-[0.5rem] font-extrabold uppercase leading-[1.02] tracking-wide text-foreground sm:text-[0.984375rem] md:text-[1.18125rem] lg:text-[1.575rem] xl:text-[1.96875rem]">Utafiti Elimu Tanzania</p>
-                <p class="mt-0.5 sm:mt-2 font-sans text-[0.5rem] font-semibold uppercase leading-[1.02] tracking-wide text-foreground/85 sm:text-[0.984375rem] md:text-[1.18125rem] lg:text-[1.575rem] xl:text-[1.96875rem]">University of Dar es Salaam</p>
+            <a href="{{ route('frontend.home') }}" class="hidden sm:block font-['Montserrat'] col-start-2 row-start-1 sm:col-span-1 sm:row-start-1 sm:col-start-2 justify-self-center text-center min-w-0 max-w-[min(100%,360px)] sm:max-w-xl md:max-w-2xl lg:max-w-4xl px-2">
+                <p class="text-[0.5rem] font-extrabold uppercase leading-[1.02] tracking-wide text-foreground sm:text-[0.984375rem] md:text-[1.18125rem] lg:text-[1.575rem] xl:text-[1.96875rem]">Utafiti Elimu Tanzania</p>
+                <p class="mt-0.5 sm:mt-2 text-[0.5rem] font-semibold uppercase leading-[1.02] tracking-wide text-[#2C63AA] sm:text-[0.984375rem] md:text-[1.18125rem] lg:text-[1.575rem] xl:text-[1.96875rem]">University of Dar es Salaam</p>
             </a>
 
             <div class="col-start-3 row-start-1 justify-self-end sm:col-start-3 sm:justify-self-end flex items-center py-0.5">
-                <img src="/storage/logos/Logo1.png" alt="University of Dar es Salaam" class="h-8 w-auto max-h-8 object-contain object-center sm:h-14 sm:max-h-[60px] md:h-[4.5rem] md:max-h-[72px]">
+                <img src="{{ asset('logos/Logo1.png') }}" alt="University of Dar es Salaam" class="h-8 w-auto max-h-8 object-contain object-center sm:h-14 sm:max-h-[60px] md:h-[4.5rem] md:max-h-[72px]">
             </div>
         </div>
-
-        <nav class="hidden md:flex flex-wrap justify-center items-center gap-x-8 gap-y-2 border-t border-border/60 mt-3 pt-3">
-            <a href="{{ route('frontend.home') }}" class="text-sm font-medium text-primary transition-colors hover:text-primary/80">Home</a>
-            <a href="{{ route('frontend.events') }}" class="text-sm text-foreground/70 transition-colors hover:text-foreground">Events</a>
-            <a href="{{ route('frontend.speakers') }}" class="text-sm text-foreground/70 transition-colors hover:text-foreground">Speakers</a>
-            <a href="{{ route('frontend.resources') }}" class="text-sm text-foreground/70 transition-colors hover:text-foreground">Resources</a>
-            <a href="{{ route('frontend.gallery') }}" class="text-sm text-foreground/70 transition-colors hover:text-foreground">Gallery</a>
-            <a href="{{ route('frontend.topics') }}" class="text-sm text-foreground/70 transition-colors hover:text-foreground">Topics</a>
-        </nav>
     </div>
+
+    <nav class="header-desktop-nav w-full bg-[#2C63AA] border-t border-white/15 mt-2 sm:mt-3">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex flex-wrap justify-center items-center gap-x-8 gap-y-2">
+            <a href="{{ route('frontend.home') }}" class="text-sm font-medium text-white transition-colors hover:text-white/85">Home</a>
+            <a href="{{ route('frontend.events') }}" class="text-sm text-white/85 transition-colors hover:text-white">Events</a>
+            <a href="{{ route('frontend.speakers') }}" class="text-sm text-white/85 transition-colors hover:text-white">Speakers</a>
+            <a href="{{ route('frontend.resources') }}" class="text-sm text-white/85 transition-colors hover:text-white">Resources</a>
+            <a href="{{ route('frontend.gallery') }}" class="text-sm text-white/85 transition-colors hover:text-white">Gallery</a>
+            <a href="{{ route('frontend.topics') }}" class="text-sm text-white/85 transition-colors hover:text-white">Topics</a>
+        </div>
+    </nav>
 
     <div class="fixed inset-0 z-[999] hidden md:hidden" data-mobile-menu>
         <div class="absolute inset-0 bg-black/60 z-[1000]" data-mobile-menu-close></div>

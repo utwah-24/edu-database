@@ -7,6 +7,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer base {
+    h1 {
+        font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+    }
+}
+
 :root {
     --background: oklch(0.97 0.01 80);
     --foreground: oklch(0.18 0.02 40);
@@ -30,8 +36,8 @@
 }
 
 @theme inline {
-    --font-sans: 'Inter', system-ui, sans-serif;
-    --font-serif: 'Inter', system-ui, sans-serif;
+    --font-sans: 'Open Sans', system-ui, sans-serif;
+    --font-serif: 'Open Sans', system-ui, sans-serif;
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -58,6 +64,100 @@
         @apply border-border outline-ring/50;
     }
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground font-sans;
+    }
+}
+
+/* Desktop header nav (md+): avoid hidden + md:* utility ordering issues */
+    .header-desktop-nav {
+        display: none;
+    }
+    @media (min-width: 48rem) {
+        .header-desktop-nav {
+            display: block;
+        }
+    }
+
+    /* Featured event card – fixed height + panel split at lg */
+@layer components {
+    .featured-event-card {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: 1rem;
+        @media (min-width: 1024px) {
+            flex-direction: row;
+            height: 26rem;
+        }
+    }
+    .featured-event-card__visual {
+        position: relative;
+        width: 100%;
+        height: 14rem;
+        flex-shrink: 0;
+        overflow: hidden;
+        @media (min-width: 1024px) {
+            width: 42%;
+            height: 100%;
+        }
+    }
+    .featured-event-card__content {
+        flex: 1 1 0%;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        padding: 1.25rem 1.5rem;
+        @media (min-width: 1024px) {
+            padding: 1.5rem 2rem;
+        }
+    }
+
+    /* Event detail hero — full-bleed bg + room for cover photo */
+    .event-detail-hero {
+        position: relative;
+        overflow: hidden;
+        color: #fff;
+        /* At least this tall so cover crop feels less “zoomed”; grows with content */
+        min-height: clamp(38rem, 76vh, 64rem);
+    }
+
+    .event-detail-hero__media {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background-color: #1c1917;
+    }
+
+    .event-detail-hero__media img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        object-fit: cover;
+        object-position: center center;
+        filter: brightness(0.68);
+    }
+
+    .event-detail-hero__overlay {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background:
+            linear-gradient(
+                to top,
+                rgba(0, 0, 0, 0.82) 0%,
+                rgba(0, 0, 0, 0.52) 42%,
+                rgba(0, 0, 0, 0.38) 100%
+            );
+    }
+
+    .event-detail-hero__veil {
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        background-color: rgba(0, 0, 0, 0.14);
     }
 }

@@ -131,6 +131,7 @@ class EventController extends Controller
         $event = Event::with([
             'summaries',
             'themes',
+            'topics.speakers',
             'programmes',
             'resources',
             'speakers',
@@ -180,6 +181,7 @@ class EventController extends Controller
         $event = Event::with([
             'summaries',
             'themes',
+            'topics.speakers',
             'programmes',
             'resources',
             'speakers',
@@ -223,6 +225,7 @@ class EventController extends Controller
         $event = Event::with([
             'summaries',
             'themes',
+            'topics.speakers',
             'programmes',
             'resources',
             'speakers',

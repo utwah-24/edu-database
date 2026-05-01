@@ -5,7 +5,7 @@
 @section('content')
     <section class="bg-secondary text-secondary-foreground">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
-            <h1 class="font-serif text-3xl sm:text-4xl lg:text-6xl font-bold mt-6">All Speakers</h1>
+            <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mt-6">All Speakers</h1>
         </div>
     </section>
     <section class="max-w-7xl mx-auto px-4 sm:px-6 mt-8 sm:mt-10">

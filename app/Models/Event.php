@@ -40,6 +40,18 @@ class Event extends Model
             return $this->cover_image;
         }
 
+        $base = rtrim((string) config('app.image_base_url', ''), '/');
+        if ($base !== '') {
+            $trimmed = ltrim($this->cover_image, '/');
+            $baseEndsWithStorage = preg_match('#/storage$#i', $base) === 1;
+            $relativePath = $baseEndsWithStorage ? preg_replace('#^storage/#i', '', $trimmed) : $trimmed;
+            $joined = $baseEndsWithStorage
+                ? $base . '/' . $relativePath
+                : $base . '/storage/' . $relativePath;
+
+            return preg_replace('#(?<!:)/{2,}#', '/', $joined);
+        }
+
         return Storage::disk('public')->url($this->cover_image);
     }
 
