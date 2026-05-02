@@ -68,18 +68,13 @@
     }
 }
 
-/* Desktop header nav (md+): avoid hidden + md:* utility ordering issues */
+@layer components {
+    /* Desktop nav (md+): avoid hidden + md:* utility ordering issues in Blade */
     .header-desktop-nav {
-        display: none;
-    }
-    @media (min-width: 48rem) {
-        .header-desktop-nav {
-            display: block;
-        }
+        @apply hidden md:block;
     }
 
     /* Featured event card – fixed height + panel split at lg */
-@layer components {
     .featured-event-card {
         display: flex;
         flex-direction: column;

@@ -3,9 +3,9 @@
 @section('title', 'Topics')
 
 @section('content')
-    <section class="bg-secondary text-secondary-foreground">
+    <section class="bg-white text-foreground border-b border-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
-            <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mt-6">All Topic Tracks</h1>
+            <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mt-6 text-foreground">All Topic Tracks</h1>
         </div>
     </section>
     <section class="max-w-7xl mx-auto px-4 sm:px-6 mt-8 sm:mt-10">

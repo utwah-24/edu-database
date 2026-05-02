@@ -1,4 +1,4 @@
-<header class="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+<header class="relative border-b border-border bg-background">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2 sm:py-4">
         <div class="grid grid-cols-[auto_1fr_auto] gap-x-3 gap-y-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-y-0 items-center">
             <div class="col-start-1 row-start-1 flex items-center gap-2 justify-self-start min-w-0">

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Http\Controllers\Web\FrontendController;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        View::composer('frontend.partials.footer', function ($view) {
+            /** @var FrontendController $frontend */
+            $frontend = app(FrontendController::class);
+            $view->with('footerSponsors', $frontend->footerSponsors(request()));
+        });
     }
 }

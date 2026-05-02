@@ -40,11 +40,11 @@ class EventController extends Controller
             $query->where('is_published', true);
         }
 
-        $events = $query->orderBy('year', 'desc')->get();
-        
+        $events = $query->with('themes')->orderBy('year', 'desc')->get();
+
         return response()->json([
             'success' => true,
-            'data' => $events
+            'data' => $events,
         ]);
     }
 

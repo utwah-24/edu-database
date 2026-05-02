@@ -449,10 +449,245 @@ class FrontendController extends Controller
 
     public function speakers(Request $request)
     {
-        $event = $this->currentEvent($request);
-        $speakers = is_array($event['speakers'] ?? null) ? $event['speakers'] : [];
+        $eventsRaw = $this->apiGet($request, 'events', ['published_only' => 1]);
+        $eventsDecorated = array_values(array_filter(array_map(
+            fn ($row) => is_array($row) ? $this->withEventImageUrls($row) : null,
+            is_array($eventsRaw) ? $eventsRaw : []
+        )));
 
-        return view('frontend.pages.speakers', ['speakers' => $speakers]);
+        /** @var list<array<string, mixed>> $eventsPayload */
+        $eventsPayload = [];
+        foreach ($eventsDecorated as $ev) {
+            if (! is_array($ev) || ! isset($ev['id'])) {
+                continue;
+            }
+            $themeLabelsOrdered = [];
+            foreach ($ev['themes'] ?? [] as $themeRow) {
+                if (! is_array($themeRow)) {
+                    continue;
+                }
+                $label = trim((string) ($themeRow['theme'] ?? ''));
+                if ($label !== '' && ! in_array($label, $themeLabelsOrdered, true)) {
+                    $themeLabelsOrdered[] = $label;
+                }
+            }
+            $eventsPayload[] = [
+                'id' => $ev['id'],
+                'title' => trim((string) ($ev['title'] ?? '')),
+                'year' => $ev['year'] ?? null,
+                'label' => trim((string) ($ev['title'] ?? '')) . (isset($ev['year']) && $ev['year'] !== '' ? ' (' . $ev['year'] . ')' : ''),
+                'themes' => $themeLabelsOrdered,
+            ];
+        }
+
+        $themeCanonToOriginal = []; // keyed by lowercase theme label → display string (from event themes)
+        $topicTitleByEventAndId = [];
+        /** @var array<string, list<string>> Ordered topic titles per event id (tracks / thematic sessions) */
+        $topicTitlesOrderedByEvent = [];
+
+        foreach ($eventsDecorated as $ev) {
+            $eid = $ev['id'] ?? null;
+            if ($eid === null || ! is_string($eid)) {
+                continue;
+            }
+            foreach ($ev['themes'] ?? [] as $themeRow) {
+                if (! is_array($themeRow)) {
+                    continue;
+                }
+                $label = trim((string) ($themeRow['theme'] ?? ''));
+                if ($label === '') {
+                    continue;
+                }
+                $themeCanonToOriginal[$eid][mb_strtolower($label)] = $label;
+            }
+
+            $topicsChunk = $this->apiGet($request, 'topics', ['event_id' => $eid]);
+            if (! isset($topicTitleByEventAndId[$eid])) {
+                $topicTitleByEventAndId[$eid] = [];
+            }
+            if (! isset($topicTitlesOrderedByEvent[$eid])) {
+                $topicTitlesOrderedByEvent[$eid] = [];
+            }
+            foreach ($topicsChunk as $topic) {
+                if (! is_array($topic) || ! array_key_exists('id', $topic)) {
+                    continue;
+                }
+                $tidLabel = trim((string) ($topic['title'] ?? ''));
+                $tidKey = (string) ($topic['id'] ?? '');
+                if ($tidKey !== '') {
+                    $topicTitleByEventAndId[$eid][$tidKey] = $tidLabel;
+                }
+                if ($tidLabel !== '') {
+                    $topicTitlesOrderedByEvent[$eid][] = $tidLabel;
+                }
+            }
+        }
+
+        foreach ($eventsPayload as &$payloadRow) {
+            $payloadEid = (string) ($payloadRow['id'] ?? '');
+            if ($payloadEid === '') {
+                continue;
+            }
+            $canonicalSeen = [];
+            $mergedThemes = [];
+            foreach ($payloadRow['themes'] ?? [] as $lbl) {
+                $piece = trim((string) $lbl);
+                if ($piece === '') {
+                    continue;
+                }
+                $c = mb_strtolower($piece);
+                if (isset($canonicalSeen[$c])) {
+                    continue;
+                }
+                $canonicalSeen[$c] = true;
+                $mergedThemes[] = $piece;
+            }
+            foreach ($topicTitlesOrderedByEvent[$payloadEid] ?? [] as $tit) {
+                $piece = trim((string) $tit);
+                if ($piece === '') {
+                    continue;
+                }
+                $c = mb_strtolower($piece);
+                if (isset($canonicalSeen[$c])) {
+                    continue;
+                }
+                $canonicalSeen[$c] = true;
+                $mergedThemes[] = $piece;
+            }
+            $payloadRow['themes'] = $mergedThemes;
+        }
+        unset($payloadRow);
+
+        $mergedSpeakers = [];
+        foreach ($eventsDecorated as $ev) {
+            $eid = $ev['id'] ?? null;
+            if ($eid === null || ! is_string($eid)) {
+                continue;
+            }
+            $chunk = $this->apiGet($request, 'speakers', ['event_id' => $eid]);
+            $eventTitle = trim((string) ($ev['title'] ?? ''));
+            $yearStr = isset($ev['year']) ? (string) $ev['year'] : '';
+
+            foreach ($chunk as $s) {
+                if (! is_array($s)) {
+                    continue;
+                }
+                $topicId = $s['topic_id'] ?? null;
+                $topicIdKey = ($topicId !== null && $topicId !== '') ? (string) $topicId : '';
+                $topicTitle = '';
+                if ($topicIdKey !== '') {
+                    $topicTitle = $topicTitleByEventAndId[$eid][$topicIdKey] ?? '';
+                }
+                $canonicalTopic = mb_strtolower($topicTitle);
+                $matchedThemeLabel = '';
+                $canonIndex = $themeCanonToOriginal[$eid] ?? [];
+                if ($canonicalTopic !== '' && isset($canonIndex[$canonicalTopic])) {
+                    $matchedThemeLabel = $canonIndex[$canonicalTopic];
+                }
+
+                $searchPieces = array_map('trim', [
+                    (string) ($s['name'] ?? ''),
+                    (string) ($s['title'] ?? ''),
+                    (string) ($s['organization'] ?? ''),
+                    $topicTitle,
+                    $matchedThemeLabel,
+                    $eventTitle,
+                    $yearStr,
+                ]);
+                $searchBlob = trim(preg_replace('/\s+/', ' ', implode(' ', array_filter($searchPieces, fn ($piece) => $piece !== ''))));
+
+                $s['photo'] = $this->resolveImageUrl($s['photo'] ?? null) ?? ($s['photo'] ?? null);
+                $s['_filter_event_id'] = $eid;
+                $s['_filter_event_title'] = $eventTitle;
+                $s['_filter_event_year'] = $yearStr;
+                $s['_filter_topic_title'] = $topicTitle;
+                $s['_filter_theme_label'] = $matchedThemeLabel;
+                $s['_filter_search_normalized'] = mb_strtolower($searchBlob);
+
+                $mergedSpeakers[] = $s;
+            }
+        }
+
+        usort($mergedSpeakers, function ($a, $b): int {
+            $yCmp = strcmp((string) ($b['_filter_event_year'] ?? ''), (string) ($a['_filter_event_year'] ?? ''));
+            if ($yCmp !== 0) {
+                return $yCmp;
+            }
+
+            return strcasecmp((string) ($a['name'] ?? ''), (string) ($b['name'] ?? ''));
+        });
+
+        return view('frontend.pages.speakers', [
+            'speakers' => $mergedSpeakers,
+            'eventsForSpeakerFilters' => $eventsPayload,
+        ]);
+    }
+
+    public function speakerDetail(Request $request, string $id)
+    {
+        $speakerPayload = $this->apiGet($request, 'speakers/' . $id);
+        abort_if(! is_array($speakerPayload) || ($speakerPayload['id'] ?? null) === null, 404);
+
+        $speaker = $speakerPayload;
+        $speaker['photo'] = $this->resolveImageUrl($speaker['photo'] ?? null) ?? ($speaker['photo'] ?? null);
+
+        $event = [];
+        if (! empty($speaker['event_id'])) {
+            $event = $this->withEventImageUrls($this->apiGet($request, 'events/' . $speaker['event_id']));
+        }
+
+        $topicSummary = [];
+        $matchedConferenceTheme = null;
+        if (! empty($speaker['topic_id'])) {
+            $topicRow = $this->apiGet($request, 'topics/' . $speaker['topic_id']);
+            $topicMatches = is_array($topicRow) && (($topicRow['id'] ?? null) === $speaker['topic_id']);
+            if ($topicMatches) {
+                $topicTitle = trim((string) ($topicRow['title'] ?? 'Topic'));
+                $topicSummary = [
+                    'id' => $topicRow['id'],
+                    'title' => $topicTitle !== '' ? $topicTitle : 'Topic',
+                    'event_id' => $topicRow['event_id'] ?? ($speaker['event_id'] ?? null),
+                    'content' => (string) ($topicRow['content'] ?? ''),
+                    'topic_picture' => $this->resolveImageUrl($topicRow['topic_picture'] ?? null) ?? ($topicRow['topic_picture'] ?? null),
+                    'topic_date_formatted' => $this->formatDateTimeValue(
+                        isset($topicRow['topic_date']) ? (string) $topicRow['topic_date'] : null
+                    ),
+                ];
+
+                if ($event !== []) {
+                    $canonical = mb_strtolower(trim($topicSummary['title']));
+                    foreach ($event['themes'] ?? [] as $themeRow) {
+                        if (! is_array($themeRow)) {
+                            continue;
+                        }
+                        $label = trim((string) ($themeRow['theme'] ?? ''));
+                        if ($label !== '' && mb_strtolower($label) === $canonical) {
+                            $matchedConferenceTheme = $label;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        $speakerKinds = [];
+        if ($speaker['is_key_speaker'] ?? $speaker['key_speaker'] ?? false) {
+            $speakerKinds[] = 'Key speaker';
+        }
+        if ($speaker['is_session_leader'] ?? $speaker['session_leader'] ?? false) {
+            $speakerKinds[] = 'Session leader';
+        }
+        if ($speakerKinds === []) {
+            $speakerKinds[] = 'Conference speaker';
+        }
+
+        return view('frontend.pages.speaker-detail', [
+            'speaker' => $speaker,
+            'event' => $event,
+            'topicSummary' => $topicSummary,
+            'matchedConferenceTheme' => $matchedConferenceTheme,
+            'speakerKinds' => $speakerKinds,
+        ]);
     }
 
     public function topics(Request $request)
@@ -480,27 +715,179 @@ class FrontendController extends Controller
 
     public function resources(Request $request)
     {
-        $resources = $this->apiGet($request, 'resources');
-        foreach ($resources as &$resource) {
-            if (is_array($resource)) {
-                $resource['url'] = $this->resolveImageUrl($resource['url'] ?? null) ?? ($resource['url'] ?? null);
-                $resource['file_path'] = $this->resolveImageUrl($resource['file_path'] ?? null) ?? ($resource['file_path'] ?? null);
+        $eventsRaw = $this->apiGet($request, 'events', ['published_only' => 1]);
+        $eventsDecorated = array_values(array_filter(array_map(
+            fn ($row) => is_array($row) ? $this->withEventImageUrls($row) : null,
+            is_array($eventsRaw) ? $eventsRaw : []
+        )));
+        usort($eventsDecorated, fn ($a, $b) => ((int) ($b['year'] ?? 0)) <=> ((int) ($a['year'] ?? 0)));
+
+        $eventsForResourceFilters = [];
+        $metaByEvent = [];
+        foreach ($eventsDecorated as $ev) {
+            if (! is_array($ev) || empty($ev['id'])) {
+                continue;
             }
+            $eid = (string) $ev['id'];
+            $title = trim((string) ($ev['title'] ?? ''));
+            $year = $ev['year'] ?? null;
+            $metaByEvent[$eid] = [
+                'title' => $title,
+                'year' => $year,
+                'location' => trim((string) ($ev['location'] ?? '')),
+            ];
+            $eventsForResourceFilters[] = [
+                'id' => $eid,
+                'label' => ($title !== '' ? $title : 'Event') . ($year !== null && $year !== '' ? ' (' . $year . ')' : ''),
+            ];
         }
-        unset($resource);
-        return view('frontend.pages.resources', ['resources' => $resources]);
+
+        $byEventId = [];
+        foreach ($this->apiGet($request, 'resources') as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $eid = isset($row['event_id']) ? (string) $row['event_id'] : '';
+            if ($eid === '' || ! isset($metaByEvent[$eid])) {
+                continue;
+            }
+
+            $row['url'] = $this->resolveImageUrl($row['url'] ?? null) ?? ($row['url'] ?? null);
+            $row['file_path'] = $this->resolveImageUrl($row['file_path'] ?? null) ?? ($row['file_path'] ?? null);
+
+            $em = $metaByEvent[$eid];
+            $eventTitleStr = ($em['title'] !== '') ? $em['title'] : 'Event';
+            $yearStr = isset($em['year']) ? (string) $em['year'] : '';
+
+            $searchPieces = array_map(trim(...), [
+                (string) ($row['title'] ?? ''),
+                strip_tags((string) ($row['description'] ?? '')),
+                (string) ($row['file_type'] ?? ''),
+                $eventTitleStr,
+                $yearStr,
+                (string) ($em['location'] ?? ''),
+            ]);
+            $searchBlob = implode(' ', array_filter($searchPieces, fn ($piece) => $piece !== ''));
+            $row['_filter_search_normalized'] = mb_strtolower(trim(preg_replace('/\s+/', ' ', $searchBlob)));
+
+            if (! isset($byEventId[$eid])) {
+                $byEventId[$eid] = [];
+            }
+            $byEventId[$eid][] = $row;
+        }
+
+        $resourcesByEvent = [];
+        foreach ($eventsDecorated as $ev) {
+            if (! is_array($ev) || empty($ev['id'])) {
+                continue;
+            }
+            $eid = (string) $ev['id'];
+            if (empty($byEventId[$eid])) {
+                continue;
+            }
+            $em = $metaByEvent[$eid];
+            $resourcesByEvent[] = [
+                'event_id' => $eid,
+                'title' => ($em['title'] !== '') ? $em['title'] : 'Event',
+                'year' => $em['year'] ?? null,
+                'location' => $em['location'] ?? '',
+                'items' => $byEventId[$eid],
+            ];
+        }
+
+        return view('frontend.pages.resources', [
+            'resourcesByEvent' => $resourcesByEvent,
+            'eventsForResourceFilters' => $eventsForResourceFilters,
+        ]);
     }
 
     public function gallery(Request $request)
     {
-        $items = $this->apiGet($request, 'gallery');
-        foreach ($items as &$item) {
-            if (is_array($item)) {
-                $item['url'] = $this->resolveImageUrl($item['url'] ?? null) ?? ($item['url'] ?? null);
-                $item['image_path'] = $this->resolveImageUrl($item['image_path'] ?? null) ?? ($item['image_path'] ?? null);
+        $eventsRaw = $this->apiGet($request, 'events', ['published_only' => 1]);
+        $eventsDecorated = array_values(array_filter(array_map(
+            fn ($row) => is_array($row) ? $this->withEventImageUrls($row) : null,
+            is_array($eventsRaw) ? $eventsRaw : []
+        )));
+        usort($eventsDecorated, fn ($a, $b) => ((int) ($b['year'] ?? 0)) <=> ((int) ($a['year'] ?? 0)));
+
+        $galleriesByEvent = [];
+        foreach ($eventsDecorated as $ev) {
+            if (! is_array($ev) || empty($ev['id'])) {
+                continue;
             }
+            $eid = (string) $ev['id'];
+            $chunk = $this->apiGet($request, 'gallery', ['event_id' => $eid]);
+            if ($chunk === []) {
+                continue;
+            }
+
+            $items = [];
+            foreach ($chunk as $row) {
+                if (! is_array($row)) {
+                    continue;
+                }
+                $displayUrl = $this->resolveImageUrl($row['url'] ?? null) ?? ($row['url'] ?? null);
+                if (! is_string($displayUrl) || trim($displayUrl) === '') {
+                    continue;
+                }
+                $row['url'] = $displayUrl;
+                $items[] = $row;
+            }
+
+            if ($items === []) {
+                continue;
+            }
+
+            $title = trim((string) ($ev['title'] ?? 'Event'));
+            $galleriesByEvent[] = [
+                'event_id' => $eid,
+                'title' => $title !== '' ? $title : 'Event',
+                'year' => $ev['year'] ?? null,
+                'location' => trim((string) ($ev['location'] ?? '')),
+                'items' => $items,
+            ];
         }
-        unset($item);
-        return view('frontend.pages.gallery', ['items' => $items]);
+
+        return view('frontend.pages.gallery', ['galleriesByEvent' => $galleriesByEvent]);
+    }
+
+    /**
+     * Sponsor rows for the footer (same “current” featured published event as the home page).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function footerSponsors(Request $request): array
+    {
+        $event = $this->currentEvent($request);
+        if ($event === [] || empty($event['id'])) {
+            return [];
+        }
+
+        $eventId = (string) $event['id'];
+        $sponsorsForEvent = $this->apiGetSponsorsForEvent($request, $eventId);
+        if ($sponsorsForEvent !== null) {
+            $rows = $sponsorsForEvent;
+        } else {
+            $rows = $this->normalizeEventSponsorsList($this->apiGet($request, 'sponsors', ['event_id' => $eventId]));
+        }
+
+        $out = [];
+        foreach ($rows as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $out[] = $this->decorateSponsorLogo($row);
+        }
+
+        usort($out, function ($a, $b): int {
+            $byOrder = ((int) ($a['order'] ?? 0)) <=> ((int) ($b['order'] ?? 0));
+            if ($byOrder !== 0) {
+                return $byOrder;
+            }
+
+            return strcasecmp((string) ($a['name'] ?? ''), (string) ($b['name'] ?? ''));
+        });
+
+        return $out;
     }
 }

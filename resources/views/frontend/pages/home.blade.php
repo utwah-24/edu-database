@@ -198,7 +198,12 @@
                                     <span class="px-2 py-0.5 bg-muted text-foreground text-xs font-medium rounded">Session Leader</span>
                                 @endif
                             </div>
-                            <a href="{{ route('frontend.speakers') }}" class="text-primary text-sm font-medium hover:underline">View Speakers</a>
+                            @php
+                                $sid = isset($speaker['id']) ? (string) $speaker['id'] : '';
+                            @endphp
+                            @if($sid !== '')
+                                <a href="{{ route('frontend.speaker.show', $sid) }}" class="inline-flex mt-1 items-center justify-center rounded-xl border border-primary/40 bg-primary/5 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10 hover:border-primary/60 transition-colors w-full sm:w-auto">View details</a>
+                            @endif
                         </div>
                     </article>
                 @endforeach
