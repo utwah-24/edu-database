@@ -29,13 +29,13 @@
     </div>
 
     <nav class="header-desktop-nav w-full bg-[#2C63AA] border-t border-white/15 mt-2 sm:mt-3">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex flex-wrap justify-center items-center gap-x-8 gap-y-2">
-            <a href="{{ route('frontend.home') }}" class="text-sm font-medium text-white transition-colors hover:text-white/85">Home</a>
-            <a href="{{ route('frontend.events') }}" class="text-sm text-white/85 transition-colors hover:text-white">Events</a>
-            <a href="{{ route('frontend.speakers') }}" class="text-sm text-white/85 transition-colors hover:text-white">Speakers</a>
-            <a href="{{ route('frontend.resources') }}" class="text-sm text-white/85 transition-colors hover:text-white">Resources</a>
-            <a href="{{ route('frontend.gallery') }}" class="text-sm text-white/85 transition-colors hover:text-white">Gallery</a>
-            <a href="{{ route('frontend.topics') }}" class="text-sm text-white/85 transition-colors hover:text-white">Topics</a>
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-5 md:py-6 flex flex-wrap justify-center items-center gap-x-10 sm:gap-x-12 gap-y-3">
+            <a href="{{ route('frontend.home') }}" class="text-base md:text-lg font-semibold text-white transition-colors hover:text-white/90">Home</a>
+            <a href="{{ route('frontend.events') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Events</a>
+            <a href="{{ route('frontend.speakers') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Speakers</a>
+            <a href="{{ route('frontend.resources') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Resources</a>
+            <a href="{{ route('frontend.gallery') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Gallery</a>
+            <a href="{{ route('frontend.topics') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Topics</a>
         </div>
     </nav>
 

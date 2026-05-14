@@ -28,7 +28,7 @@
             <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
                 <div>
                     <p class="text-primary text-sm font-medium">01</p>
-                    <h2 class="font-serif text-3xl font-bold mt-2">Past Events</h2>
+                    <h2 class="font-serif text-3xl font-bold mt-2">Current Events</h2>
                     <p class="text-muted-foreground text-sm mt-2">Published conferences with details and highlights.</p>
                 </div>
                 <a href="{{ route('frontend.events') }}" class="text-primary font-medium text-sm hover:underline">Explore All Events</a>
