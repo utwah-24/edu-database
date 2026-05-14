@@ -10,5 +10,6 @@ Route::get('/events/{eventId}/topics/{topicId}', [FrontendController::class, 'to
 Route::get('/speakers', [FrontendController::class, 'speakers'])->name('frontend.speakers');
 Route::get('/speakers/{id}', [FrontendController::class, 'speakerDetail'])->name('frontend.speaker.show');
 Route::get('/topics', [FrontendController::class, 'topics'])->name('frontend.topics');
-Route::get('/resources', [FrontendController::class, 'resources'])->name('frontend.resources');
+Route::get('/event-resources', [FrontendController::class, 'resources'])->name('frontend.resources');
+Route::get('/resources', [FrontendController::class, 'resources']);
 Route::get('/gallery', [FrontendController::class, 'gallery'])->name('frontend.gallery');
