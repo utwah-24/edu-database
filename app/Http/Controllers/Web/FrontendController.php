@@ -286,11 +286,14 @@ class FrontendController extends Controller
         )));
         usort($events, fn ($a, $b) => ((int) ($b['year'] ?? 0)) <=> ((int) ($a['year'] ?? 0)));
 
+        /** @var list<array<string, mixed>> $publishedEvents */
+        $publishedEvents = $events;
+
         $featuredEventId = $event['id'] ?? null;
         $eventsForCards = $featuredEventId === null
-            ? $events
+            ? $publishedEvents
             : array_values(array_filter(
-                $events,
+                $publishedEvents,
                 fn ($item) => ! is_array($item) || ($item['id'] ?? null) !== $featuredEventId
             ));
 
@@ -343,9 +346,45 @@ class FrontendController extends Controller
             $eventTopicHighlights = array_slice($eventTopicHighlights, 0, 4);
         }
 
+        $carouselEvents = [];
+        if ($event !== []) {
+            $highlightTitles = [];
+            foreach ($eventTopicHighlights as $ht) {
+                if (is_array($ht) && ! empty($ht['title'])) {
+                    $highlightTitles[] = (string) $ht['title'];
+                }
+            }
+            $carouselEvents[] = $this->buildCarouselCardPayload($event, $highlightTitles);
+        }
+        foreach ($publishedEvents as $ev) {
+            if (! is_array($ev) || count($carouselEvents) >= 6) {
+                break;
+            }
+            if (($ev['id'] ?? null) === $featuredEventId) {
+                continue;
+            }
+            $eid = $ev['id'] ?? null;
+            $hl = [];
+            if ($eid !== null) {
+                foreach ($topics as $t) {
+                    if (! is_array($t) || ($t['event_id'] ?? null) !== $eid) {
+                        continue;
+                    }
+                    if (! empty($t['title'])) {
+                        $hl[] = (string) $t['title'];
+                    }
+                    if (count($hl) >= 4) {
+                        break;
+                    }
+                }
+            }
+            $carouselEvents[] = $this->buildCarouselCardPayload($ev, $hl);
+        }
+
         return view('frontend.pages.home', [
             'event' => $event,
             'events' => array_slice($eventsForCards, 0, 3),
+            'carousel_events' => $carouselEvents,
             'speakers' => array_slice($speakers, 0, 3),
             'topics' => array_slice($topics, 0, 4),
             'event_topic_highlights' => $eventTopicHighlights,
@@ -889,5 +928,80 @@ class FrontendController extends Controller
         });
 
         return $out;
+    }
+
+    /**
+     * Human-readable conference dates for carousel / cards.
+     */
+    private function carouselDateRangeLabel(array $event): string
+    {
+        $start = ! empty($event['start_date']) ? \Carbon\Carbon::parse($event['start_date']) : null;
+        $end = ! empty($event['end_date']) ? \Carbon\Carbon::parse($event['end_date']) : null;
+        if ($start && $end && $start->month === $end->month && $start->year === $end->year) {
+            return $start->format('F j').'–'.$end->format('j, Y');
+        }
+        if ($start && $end) {
+            return $start->format('F j, Y').' – '.$end->format('F j, Y');
+        }
+        if ($start) {
+            return $start->format('F j, Y');
+        }
+
+        $fromFormatted = trim((string) ($event['start_date_formatted'] ?? ''));
+        $toFormatted = trim((string) ($event['end_date_formatted'] ?? ''));
+        if ($fromFormatted !== '' || $toFormatted !== '') {
+            return trim($fromFormatted.($toFormatted !== '' ? ' – '.$toFormatted : ''));
+        }
+
+        return 'Date TBA';
+    }
+
+    /**
+     * One slide of the home “Current Events” carousel (JSON-serialized for the browser).
+     *
+     * @param  list<string>  $highlightTitles
+     * @return array<string, mixed>
+     */
+    private function buildCarouselCardPayload(array $event, array $highlightTitles = []): array
+    {
+        $programmesList = collect($event['programmes'] ?? [])->sortBy(fn ($p) => (int) ($p['order'] ?? 0))->values();
+        $primaryProgramme = $programmesList->first();
+        $themeRow = collect($event['themes'] ?? [])->first();
+
+        $cardHeadline = is_array($primaryProgramme) && ! empty($primaryProgramme['title'])
+            ? (string) $primaryProgramme['title']
+            : (is_array($themeRow) && ! empty($themeRow['theme'])
+                ? (string) $themeRow['theme']
+                : (string) ($event['title'] ?? 'Event'));
+
+        $cardEyebrow = is_array($primaryProgramme)
+            ? 'Primary programme'
+            : ((is_array($themeRow) && trim((string) ($themeRow['theme'] ?? '')) !== '')
+                ? 'Conference theme'
+                : 'Featured conference');
+
+        $firstSummary = collect($event['summaries'] ?? [])->first();
+        $summarySource = is_array($primaryProgramme) && ! empty($primaryProgramme['description'])
+            ? (string) $primaryProgramme['description']
+            : (is_array($firstSummary) ? (string) ($firstSummary['summary'] ?? '') : '');
+        $cardDescription = \Illuminate\Support\Str::limit(trim(strip_tags($summarySource)), 220);
+
+        $id = $event['id'] ?? '';
+
+        return [
+            'id' => (string) $id,
+            'detail_url' => $id !== '' ? route('frontend.events.show', $id) : '#',
+            'title' => (string) ($event['title'] ?? 'Event'),
+            'year' => (string) ($event['year'] ?? ''),
+            'location' => (string) ($event['location'] ?? 'Location TBA'),
+            'cover_image_url' => (string) ($event['cover_image_url'] ?? ($event['cover_image'] ?? '/placeholder.jpg')),
+            'date_range_label' => $this->carouselDateRangeLabel($event),
+            'card_eyebrow' => $cardEyebrow,
+            'card_headline' => $cardHeadline,
+            'card_description' => $cardDescription,
+            'speaker_count' => count($event['speakers'] ?? []),
+            'resource_count' => count($event['resources'] ?? []),
+            'highlights' => array_values(array_slice($highlightTitles, 0, 4)),
+        ];
     }
 }

@@ -28,17 +28,6 @@
         </div>
     </div>
 
-    <nav class="header-desktop-nav w-full bg-[#2C63AA] border-t border-white/15 mt-2 sm:mt-3">
-        <div class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-5 md:py-6 flex flex-wrap justify-center items-center gap-x-10 sm:gap-x-12 gap-y-3">
-            <a href="{{ route('frontend.home') }}" class="text-base md:text-lg font-semibold text-white transition-colors hover:text-white/90">Home</a>
-            <a href="{{ route('frontend.events') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Events</a>
-            <a href="{{ route('frontend.speakers') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Speakers</a>
-            <a href="{{ route('frontend.resources') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Resources</a>
-            <a href="{{ route('frontend.gallery') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Gallery</a>
-            <a href="{{ route('frontend.topics') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Topics</a>
-        </div>
-    </nav>
-
     <div class="fixed inset-0 z-[999] hidden md:hidden" data-mobile-menu>
         <div class="absolute inset-0 bg-black/60 z-[1000]" data-mobile-menu-close></div>
         <aside class="absolute left-0 top-0 h-dvh w-72 max-w-[85vw] bg-card border-r border-border p-5 shadow-2xl z-[1001] overflow-y-auto">
@@ -66,3 +55,17 @@
         </aside>
     </div>
 </header>
+
+<nav
+    class="header-desktop-nav sticky top-0 z-50 w-full bg-[#2C63AA] border-b border-[#24528f]/50 shadow-md"
+    aria-label="Primary"
+>
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-5 md:py-6 flex flex-wrap justify-center items-center gap-x-10 sm:gap-x-12 gap-y-3">
+        <a href="{{ route('frontend.home') }}" class="text-base md:text-lg font-semibold text-white transition-colors hover:text-white/90">Home</a>
+        <a href="{{ route('frontend.events') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Events</a>
+        <a href="{{ route('frontend.speakers') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Speakers</a>
+        <a href="{{ route('frontend.resources') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Resources</a>
+        <a href="{{ route('frontend.gallery') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Gallery</a>
+        <a href="{{ route('frontend.topics') }}" class="text-base md:text-lg font-medium text-white/90 transition-colors hover:text-white">Topics</a>
+    </div>
+</nav>
