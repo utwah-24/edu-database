@@ -6,7 +6,7 @@
     <section class="bg-white text-foreground border-b border-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
             <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mt-6 text-foreground">All Speakers</h1>
-            <p class="mt-4 text-muted-foreground text-sm max-w-2xl">
+            <p class="text-explanation mt-4 text-muted-foreground text-sm max-w-2xl">
                 Filter by conference event and theme, or search across names, titles, organisations, topics, themes, and events.
             </p>
             <div class="mt-10 flex flex-col gap-5 xl:flex-row xl:flex-wrap xl:items-end">
@@ -96,7 +96,7 @@
                             $sameTopicAsTheme = $cardTopicTitle !== '' && $cardThemeLabel !== '' && mb_strtolower($cardTopicTitle) === mb_strtolower($cardThemeLabel);
                         @endphp
                         @if($cardThemeLabel !== '' || $cardTopicTitle !== '')
-                            <p class="text-xs text-muted-foreground text-center sm:text-left leading-relaxed">
+                            <p class="text-explanation text-xs text-muted-foreground text-center sm:text-left leading-relaxed">
                                 @if($cardThemeLabel !== '')
                                     <span class="font-medium text-foreground/80">{{ $cardThemeLabel }}</span>
                                 @endif

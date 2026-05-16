@@ -93,7 +93,7 @@
                             $topicBlurb = trim(strip_tags($topicSummary['content'] ?? ''));
                         @endphp
                         @if($topicBlurb !== '')
-                            <p class="text-sm text-muted-foreground leading-relaxed mt-4">
+                            <p class="text-explanation text-sm text-muted-foreground leading-relaxed mt-4">
                                 {{ \Illuminate\Support\Str::limit($topicBlurb, 360) }}
                             </p>
                         @endif
@@ -110,7 +110,7 @@
                 @if(!empty($speaker['bio']))
                     <article class="rounded-2xl border border-border bg-card p-6 sm:p-8">
                         <h2 class="font-serif text-xl font-bold text-foreground">About</h2>
-                        <div class="prose prose-sm max-w-none text-muted-foreground mt-4 dark:prose-invert [&_p]:my-2 [&_p:first-child]:mt-0">{!! $speaker['bio'] !!}</div>
+                        <div class="text-explanation prose prose-sm max-w-none text-muted-foreground mt-4 dark:prose-invert [&_p]:my-2 [&_p:first-child]:mt-0">{!! $speaker['bio'] !!}</div>
                     </article>
                 @endif
 

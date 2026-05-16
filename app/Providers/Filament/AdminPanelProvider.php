@@ -2,14 +2,15 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\AdminDashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -25,9 +26,13 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName('Utafiti Elimu Admin')
             ->colors([
-                'primary' => Color::Indigo,
+                'primary' => Color::hex('#E86B4A'),
+                'gray' => Color::Slate,
             ])
+            ->darkMode(true)
+            ->sidebarCollapsibleOnDesktop()
             ->resources([
                 \App\Filament\Resources\EventResource::class,
                 \App\Filament\Resources\TopicResource::class,
@@ -44,8 +49,13 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Resources\UserResource::class,
             ])
             ->pages([
-                Dashboard::class,
+                AdminDashboard::class,
             ])
+            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn (): string => view('filament.hooks.admin-theme')->render(),
+            )
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

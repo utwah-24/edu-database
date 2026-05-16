@@ -6,7 +6,7 @@
     <section class="bg-white text-foreground border-b border-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
             <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mt-6 text-foreground">Gallery</h1>
-            <p class="mt-4 max-w-2xl text-sm text-muted-foreground">Photos grouped by conference. Each album covers one event edition.</p>
+            <p class="text-explanation mt-4 max-w-2xl text-sm text-muted-foreground">Photos grouped by conference. Each album covers one event edition.</p>
         </div>
     </section>
     <section class="max-w-7xl mx-auto px-4 sm:px-6 mt-8 sm:mt-10 pb-16 space-y-14 sm:space-y-16">
@@ -22,7 +22,7 @@
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <h2 class="font-serif text-2xl sm:text-3xl font-bold text-foreground leading-tight">{{ $blockTitle }}</h2>
-                            <p class="mt-2 text-sm text-muted-foreground">
+                            <p class="text-explanation mt-2 text-sm text-muted-foreground">
                                 @if($year !== null && $year !== '')
                                     <span class="inline-flex px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">{{ $year }}</span>
                                 @endif

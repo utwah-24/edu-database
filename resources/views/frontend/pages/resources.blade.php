@@ -6,7 +6,7 @@
     <section class="bg-white text-foreground border-b border-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
             <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mt-6 text-foreground">Resources</h1>
-            <p class="mt-4 text-muted-foreground text-sm max-w-2xl">
+            <p class="text-explanation mt-4 text-muted-foreground text-sm max-w-2xl">
                 Materials by conference edition. Filter by event or search by resource title, description, file type, event, year, or venue.
             </p>
             @if(!empty($resourcesByEvent))
@@ -72,7 +72,7 @@
                             <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                                 <div>
                                     <h2 class="font-serif text-2xl sm:text-3xl font-bold text-foreground">{{ $blockTitle }}</h2>
-                                    <p class="mt-2 text-sm text-muted-foreground">
+                                    <p class="text-explanation mt-2 text-sm text-muted-foreground">
                                         @if($year !== null && $year !== '')
                                             <span class="inline-flex px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">{{ $year }}</span>
                                         @endif
@@ -108,7 +108,7 @@
                                         <p class="text-xs text-muted-foreground mt-1 uppercase tracking-wide">{{ $resource['file_type'] }}</p>
                                     @endif
                                     @if(!empty($resource['description']))
-                                        <p class="text-muted-foreground text-sm mt-2">{{ strip_tags($resource['description']) }}</p>
+                                        <p class="text-explanation text-muted-foreground text-sm mt-2">{{ strip_tags($resource['description']) }}</p>
                                     @endif
                                     @if(filled($href))
                                         <a href="{{ $href }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors mt-4">

@@ -61,7 +61,7 @@
                         <span>Conference overview</span>
                         <svg class="h-4 w-4 shrink-0 text-primary transition group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                     </summary>
-                    <div class="border-t border-white/10 px-4 py-3 text-xs leading-relaxed text-white/92 sm:px-5 sm:py-4 sm:text-sm [&_a]:text-primary [&_a:hover]:underline [&_strong]:text-white [&_p]:my-1.5 [&_p:first-child]:mt-0 [&_br]:block">
+                    <div class="text-explanation border-t border-white/10 px-4 py-3 text-xs leading-relaxed text-white/92 sm:px-5 sm:py-4 sm:text-sm [&_a]:text-primary [&_a:hover]:underline [&_strong]:text-white [&_p]:my-1.5 [&_p:first-child]:mt-0 [&_br]:block">
                         {!! $heroIntroHtml !!}
                     </div>
                 </details>
@@ -77,7 +77,7 @@
                     <article class="rounded-2xl border border-border/90 bg-card p-6 shadow-sm ring-1 ring-black/[0.03] sm:p-8">
                         <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Agenda</p>
                         <h2 class="mt-1 font-serif text-2xl font-bold text-foreground">Themes</h2>
-                        <p class="mt-2 text-sm text-muted-foreground">
+                        <p class="text-explanation mt-2 text-sm text-muted-foreground">
                             This year’s programme spans {{ $themeTrackCount }} {{ Str::plural('track', $themeTrackCount) }}:
                         </p>
 
@@ -131,7 +131,7 @@
                     <article class="rounded-2xl border border-border/90 bg-card p-6 shadow-sm ring-1 ring-black/[0.03] sm:p-8">
                         <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Agenda</p>
                         <h2 class="mt-1 font-serif text-2xl font-bold text-foreground">Themes</h2>
-                        <p class="mt-2 text-sm text-muted-foreground">
+                        <p class="text-explanation mt-2 text-sm text-muted-foreground">
                             This year’s programme spans {{ $themeCount }} {{ Str::plural('area', $themeCount) }}:
                         </p>
 
@@ -203,7 +203,7 @@
                                     </p>
                                 </div>
                                 @if(!empty($programme['description']) && ! ($index === 0 && $heroFromProgramme))
-                                    <div class="mt-3 text-sm leading-relaxed text-muted-foreground prose prose-sm max-w-none dark:prose-invert [&_p]:my-2 [&_p:first-child]:mt-0">
+                                    <div class="text-explanation mt-3 text-sm leading-relaxed text-muted-foreground prose prose-sm max-w-none dark:prose-invert [&_p]:my-2 [&_p:first-child]:mt-0">
                                         {!! $programme['description'] !!}
                                     </div>
                                 @endif
@@ -222,7 +222,7 @@
                                     <div class="min-w-0">
                                         <p class="font-medium text-sm text-foreground">{{ $resource['title'] ?? 'Resource' }}</p>
                                         @if(!empty($resource['description']))
-                                            <p class="mt-1 text-xs text-muted-foreground line-clamp-2">{{ $resource['description'] }}</p>
+                                            <p class="text-explanation mt-1 text-xs text-muted-foreground line-clamp-2">{{ $resource['description'] }}</p>
                                         @endif
                                     </div>
                                     @if(!empty($resource['url']) || !empty($resource['file_path']))
@@ -250,7 +250,7 @@
                                             <svg class="h-4 w-4 shrink-0 text-muted-foreground transition group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                                         </span>
                                     </summary>
-                                    <div class="mt-3 border-t border-border/60 pt-3 text-sm leading-relaxed text-muted-foreground">{!! $faq['answer'] ?? '' !!}</div>
+                                    <div class="text-explanation mt-3 border-t border-border/60 pt-3 text-sm leading-relaxed text-muted-foreground">{!! $faq['answer'] ?? '' !!}</div>
                                 </details>
                             @endforeach
                         </div>

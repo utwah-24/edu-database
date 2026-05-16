@@ -30,7 +30,7 @@
             @if(!empty($topic['content']))
                 <article class="rounded-3xl border border-border bg-card p-8">
                     <h2 class="font-serif text-xl font-bold mb-4">About this theme</h2>
-                    <div class="prose prose-sm max-w-none text-foreground/85">{!! $topic['content'] !!}</div>
+                    <div class="text-explanation prose prose-sm max-w-none text-foreground/85">{!! $topic['content'] !!}</div>
                 </article>
             @endif
 
@@ -77,7 +77,7 @@
                                         @if(!empty($speaker['organization'])) — {{ $speaker['organization'] }} @endif
                                     </p>
                                     @if(!empty($speaker['bio']) && strip_tags($speaker['bio']) !== 'null')
-                                        <p class="text-sm text-foreground/75 mt-2 leading-relaxed line-clamp-3">{{ strip_tags($speaker['bio']) }}</p>
+                                        <p class="text-explanation text-sm text-foreground/75 mt-2 leading-relaxed line-clamp-3">{{ strip_tags($speaker['bio']) }}</p>
                                     @endif
 
                                     {{-- contact links --}}

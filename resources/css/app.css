@@ -38,6 +38,7 @@
 @theme inline {
     --font-sans: 'Open Sans', system-ui, sans-serif;
     --font-serif: 'Open Sans', system-ui, sans-serif;
+    --font-explanation: Georgia, 'Times New Roman', Times, serif;
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -69,6 +70,37 @@
 }
 
 @layer components {
+    /* Main explanatory copy — Georgia Bold */
+    .text-explanation {
+        font-family: var(--font-explanation);
+        font-weight: 700;
+    }
+
+    .text-explanation :where(p, li, td, th, blockquote, dd, dt) {
+        font-family: inherit;
+        font-weight: inherit;
+    }
+
+    /* Home hero — curved bottom via large border-radius (Kindle-style) */
+    .home-hero {
+        position: relative;
+        padding-bottom: clamp(2.5rem, 8vw, 5rem);
+    }
+
+    .home-hero::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        z-index: 15;
+        width: 130%;
+        height: clamp(4rem, 14vw, 7.5rem);
+        transform: translate(-50%, 52%);
+        border-radius: 50%;
+        background: color-mix(in oklch, var(--muted) 30%, var(--background));
+        pointer-events: none;
+    }
+
     /* Desktop nav (md+): avoid hidden + md:* utility ordering issues in Blade */
     .header-desktop-nav {
         @apply hidden md:block;

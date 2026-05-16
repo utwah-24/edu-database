@@ -20,7 +20,7 @@
                     @if(!empty($topic['topic_date_formatted']))
                         <p class="text-xs text-muted-foreground mt-1">{{ $topic['topic_date_formatted'] }}</p>
                     @endif
-                    <p class="text-muted-foreground mt-2 text-sm">{{ \Illuminate\Support\Str::limit(strip_tags($topic['content'] ?? ''), 180) }}</p>
+                    <p class="text-explanation text-muted-foreground mt-2 text-sm">{{ \Illuminate\Support\Str::limit(strip_tags($topic['content'] ?? ''), 180) }}</p>
                 </article>
             @endforeach
         </div>

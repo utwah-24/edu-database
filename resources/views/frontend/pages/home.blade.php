@@ -3,9 +3,9 @@
 @section('title', 'Event Archive')
 
 @section('content')
-    <section class="relative overflow-hidden">
+    <section class="home-hero relative overflow-hidden">
         <div class="absolute inset-0">
-            <img src="{{ asset('/storage/Bg.jpeg') }}" alt="Conference background" class="w-full h-full object-cover">
+            <img src="{{ asset('/storage/Bg.jpeg') }}" alt="" class="h-full w-full object-cover object-center">
             <div class="absolute inset-0 bg-secondary/90"></div>
         </div>
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-28">
@@ -13,7 +13,7 @@
             <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight tracking-tight mt-4">
                 Utafiti Elimu <span class="text-primary">Tanzania</span>
             </h1>
-            <p class="text-white/70 text-lg leading-relaxed max-w-xl mt-6">
+            <p class="text-explanation text-white/70 text-lg leading-relaxed max-w-xl mt-6">
                 Schedules, speakers, topic tracks, resources, and partners organized by conference year.
             </p>
             <div class="flex flex-wrap gap-3 mt-6">
@@ -23,13 +23,13 @@
         </div>
     </section>
 
-    <section id="events" class="py-14 sm:py-20 bg-muted/30 mt-8 sm:mt-10">
+    <section id="events" class="bg-muted/30 py-14 sm:py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
                 <div>
                     <p class="text-primary text-sm font-medium">01</p>
                     <h2 class="font-serif text-3xl font-bold mt-2">Current Events</h2>
-                    <p class="text-muted-foreground text-sm mt-2">Published conferences with details and highlights.</p>
+                    <p class="text-explanation text-muted-foreground text-sm mt-2">Published conferences with details and highlights.</p>
                 </div>
                 <a href="{{ route('frontend.events') }}" class="text-primary font-medium text-sm hover:underline">Explore All Events</a>
             </div>
@@ -77,7 +77,7 @@
                                 </p>
                             </div>
 
-                            <p data-carousel-description class="mt-2 line-clamp-2 text-[11px] leading-snug text-foreground/80 {{ $c0['card_description'] === '' ? 'hidden' : '' }}">{{ $c0['card_description'] }}</p>
+                            <p data-carousel-description class="text-explanation mt-2 line-clamp-2 text-[11px] leading-snug text-foreground/80 {{ $c0['card_description'] === '' ? 'hidden' : '' }}">{{ $c0['card_description'] }}</p>
 
                             <div class="featured-event-card__stats mt-2 flex shrink-0 gap-2">
                                 <div class="flex min-w-0 flex-1 flex-col items-center justify-center rounded-lg border border-border/80 bg-muted/40 px-2 py-1.5 text-center">
@@ -293,7 +293,7 @@
                         <h3 class="font-serif text-xl font-semibold text-foreground group-hover:text-primary transition-colors">
                             {{ $topic['title'] ?? 'Topic' }}
                         </h3>
-                        <p class="text-muted-foreground text-sm leading-relaxed mt-3 line-clamp-4">
+                        <p class="text-explanation text-muted-foreground text-sm leading-relaxed mt-3 line-clamp-4">
                             {{ \Illuminate\Support\Str::limit(strip_tags($topic['content'] ?? ''), 150) }}
                         </p>
                     </article>
@@ -318,7 +318,7 @@
                             {{ $resource['title'] ?? 'Resource' }}
                         </h3>
                         @if(!empty($resource['description']))
-                            <p class="text-muted-foreground text-sm mt-2">{{ $resource['description'] }}</p>
+                            <p class="text-explanation text-muted-foreground text-sm mt-2">{{ $resource['description'] }}</p>
                         @endif
                         @if(!empty($resource['url']) || !empty($resource['file_path']))
                             <a href="{{ $resource['url'] ?? $resource['file_path'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors mt-4">
