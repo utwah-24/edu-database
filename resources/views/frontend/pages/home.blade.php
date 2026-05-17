@@ -5,7 +5,7 @@
 @section('content')
     <section class="home-hero relative overflow-hidden">
         <div class="absolute inset-0">
-            <img src="{{ asset('/storage/Bg.jpeg') }}" alt="" class="h-full w-full object-cover object-center">
+            <img src="{{ asset('Bg.jpeg') }}" alt="" class="h-full w-full object-cover object-center">
             <div class="absolute inset-0 bg-secondary/90"></div>
         </div>
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-20 md:py-28">
@@ -35,9 +35,12 @@
             </div>
 
             @if(!empty($carousel_events))
-                @php $c0 = $carousel_events[0]; @endphp
+                @php
+                    $c0 = $carousel_events[0];
+                    $carouselHasMultiple = count($carousel_events) > 1;
+                @endphp
 
-                <div id="current-event" class="mb-10" data-featured-carousel>
+                <div id="current-event" class="mb-10" data-featured-carousel @if($carouselHasMultiple) tabindex="0" @endif>
                     <script type="application/json" id="featured-events-carousel-data">@json($carousel_events)</script>
 
                     <article class="featured-event-card group relative overflow-hidden rounded-2xl border border-border/90 bg-card shadow-md ring-1 ring-black/[0.04] transition-shadow duration-300 hover:shadow-lg">
@@ -59,6 +62,21 @@
                                 </div>
                                 <p data-carousel-title class="mt-2 max-w-xl text-base font-bold leading-snug text-white sm:text-lg">{{ $c0['title'] }}</p>
                             </div>
+
+                            @if($carouselHasMultiple)
+                                <div
+                                    class="featured-carousel-nav absolute bottom-4 right-4 z-40 flex flex-row gap-2 sm:bottom-5 sm:right-5"
+                                    data-carousel-nav
+                                    aria-label="Event slideshow controls"
+                                >
+                                    <button type="button" data-carousel-prev class="featured-carousel-nav__btn" aria-label="Previous event">
+                                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                                    </button>
+                                    <button type="button" data-carousel-next class="featured-carousel-nav__btn" aria-label="Next event">
+                                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                                    </button>
+                                </div>
+                            @endif
                         </div>
 
                         {{-- Content panel: dense layout to match fixed image height (no scroll) --}}
@@ -100,29 +118,16 @@
                             </div>
 
                             <div class="featured-event-card__footer mt-auto flex shrink-0 flex-col gap-1.5 border-t border-border/60 pt-1.5 sm:flex-row sm:items-center sm:justify-between sm:pt-2">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex items-center gap-1.5" data-carousel-nav>
-                                        <button
-                                            type="button"
-                                            data-carousel-prev
-                                            class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-sm transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary disabled:pointer-events-none disabled:opacity-40"
-                                            aria-label="Previous event"
-                                            @if(count($carousel_events) < 2) disabled @endif
-                                        >
-                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            data-carousel-next
-                                            class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-sm transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary disabled:pointer-events-none disabled:opacity-40"
-                                            aria-label="Next event"
-                                            @if(count($carousel_events) < 2) disabled @endif
-                                        >
-                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-                                        </button>
+                                @if($carouselHasMultiple)
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <p data-carousel-counter class="text-[11px] font-semibold tabular-nums text-muted-foreground">
+                                            <span data-carousel-counter-current>1</span><span class="px-0.5 text-foreground/35">/</span><span data-carousel-counter-total>{{ count($carousel_events) }}</span>
+                                        </p>
+                                        <div data-carousel-dots class="flex items-center gap-1.5" role="tablist" aria-label="Choose event"></div>
                                     </div>
-                                    <div data-carousel-dots class="hidden items-center gap-1.5 sm:flex"></div>
-                                </div>
+                                @else
+                                    <div aria-hidden="true"></div>
+                                @endif
                                 <a
                                     href="{{ $c0['detail_url'] }}"
                                     data-carousel-detail
@@ -158,30 +163,53 @@
                         const res = $('[data-carousel-resources]');
                         const hiWrap = $('[data-carousel-highlights-wrap]');
                         const hiBox = $('[data-carousel-highlights]');
-                        const prev = $('[data-carousel-prev]');
-                        const next = $('[data-carousel-next]');
+                        const nav = $('[data-carousel-nav]');
+                        const prev = nav ? nav.querySelector('[data-carousel-prev]') : null;
+                        const next = nav ? nav.querySelector('[data-carousel-next]') : null;
                         const dots = $('[data-carousel-dots]');
+                        const counterCurrent = $('[data-carousel-counter-current]');
                         const detail = $('[data-carousel-detail]');
 
                         let i = 0;
+                        let hasRendered = false;
+                        const go = (idx) => {
+                            i = (idx + slides.length) % slides.length;
+                            render();
+                        };
+
                         const setDots = () => {
                             if (!dots) return;
                             dots.innerHTML = '';
-                            if (slides.length < 2) { dots.classList.add('hidden'); return; }
-                            dots.classList.remove('hidden');
+                            if (slides.length < 2) return;
                             slides.forEach((_, idx) => {
                                 const b = document.createElement('button');
                                 b.type = 'button';
-                                b.className = 'h-2 w-2 rounded-full transition ' + (idx === i ? 'bg-primary scale-110' : 'bg-border hover:bg-primary/50');
+                                b.className = 'featured-carousel-dot' + (idx === i ? ' is-active' : '');
+                                b.setAttribute('role', 'tab');
+                                b.setAttribute('aria-selected', idx === i ? 'true' : 'false');
                                 b.setAttribute('aria-label', 'Go to event ' + (idx + 1));
-                                b.addEventListener('click', () => { i = idx; render(); });
+                                b.addEventListener('click', () => go(idx));
                                 dots.appendChild(b);
                             });
                         };
 
                         const render = () => {
                             const d = slides[i] || {};
-                            if (cover) { cover.src = d.cover_image_url || ''; cover.alt = d.title || ''; }
+                            if (cover) {
+                                const url = d.cover_image_url || '';
+                                const alt = d.title || '';
+                                if (!hasRendered) {
+                                    cover.src = url;
+                                    cover.alt = alt;
+                                } else {
+                                    cover.classList.add('is-changing');
+                                    window.setTimeout(() => {
+                                        cover.src = url;
+                                        cover.alt = alt;
+                                        cover.classList.remove('is-changing');
+                                    }, 120);
+                                }
+                            }
                             if (year) year.textContent = d.year || '';
                             if (title) title.textContent = d.title || '';
                             if (eyebrow) eyebrow.textContent = d.card_eyebrow || '';
@@ -210,14 +238,18 @@
                                 detail.href = d.detail_url || '#';
                                 detail.setAttribute('aria-label', 'View details for ' + (d.title || 'event'));
                             }
-                            const single = slides.length < 2;
-                            if (prev) prev.disabled = single;
-                            if (next) next.disabled = single;
+                            if (counterCurrent) counterCurrent.textContent = String(i + 1);
                             setDots();
+                            hasRendered = true;
                         };
 
-                        if (prev) prev.addEventListener('click', () => { i = (i - 1 + slides.length) % slides.length; render(); });
-                        if (next) next.addEventListener('click', () => { i = (i + 1) % slides.length; render(); });
+                        if (prev) prev.addEventListener('click', () => go(i - 1));
+                        if (next) next.addEventListener('click', () => go(i + 1));
+                        root.addEventListener('keydown', (e) => {
+                            if (slides.length < 2) return;
+                            if (e.key === 'ArrowLeft') { e.preventDefault(); go(i - 1); }
+                            if (e.key === 'ArrowRight') { e.preventDefault(); go(i + 1); }
+                        });
                         render();
                     })();
                 </script>

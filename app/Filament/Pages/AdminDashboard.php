@@ -2,7 +2,7 @@
 
 namespace App\Filament\Pages;
 
-use App\Filament\Widgets\ContentInventoryStats;
+use App\Filament\Widgets\DashboardWelcomeWidget;
 use App\Filament\Widgets\ContentMixChart;
 use App\Filament\Widgets\EventsBreakdownTable;
 use App\Filament\Widgets\EventsByYearChart;
@@ -21,14 +21,12 @@ class AdminDashboard extends BaseDashboard
 
     public function getHeading(): string | Htmlable
     {
-        $name = auth()->user()?->name ?? 'Admin';
-
-        return "Hey, {$name}";
+        return '';
     }
 
     public function getSubheading(): string | Htmlable | null
     {
-        return 'Overview of events, speakers, sponsors, and all conference content in the archive.';
+        return null;
     }
 
     /**
@@ -37,8 +35,8 @@ class AdminDashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
+            DashboardWelcomeWidget::class,
             SystemOverviewStats::class,
-            ContentInventoryStats::class,
             EventsByYearChart::class,
             ContentMixChart::class,
             SponsorTiersChart::class,
@@ -50,8 +48,7 @@ class AdminDashboard extends BaseDashboard
     {
         return [
             'default' => 1,
-            'md' => 2,
-            'xl' => 3,
+            'lg' => 3,
         ];
     }
 }

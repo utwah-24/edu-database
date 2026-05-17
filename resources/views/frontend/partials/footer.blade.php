@@ -26,8 +26,8 @@
                 {{-- Brand + home --}}
                 <div class="sm:col-span-2 lg:col-span-1">
                     <a href="{{ route('frontend.home') }}" class="inline-flex items-center gap-3 rounded-lg transition-opacity hover:opacity-90">
-                        <img src="{{ asset('logos/Logo2.png') }}" alt="" class="h-11 w-auto object-contain brightness-0 invert">
-                        <span class="font-['Montserrat'] text-left leading-tight">
+                        <img src="{{ asset('logos/Logo2.png') }}" alt="Tanzania national emblem" class="h-11 w-auto object-contain object-center">
+                        <span class="text-left leading-tight">
                             <span class="block text-sm font-bold uppercase tracking-wide">Utafiti Elimu</span>
                             <span class="block text-xs font-semibold text-white/80">Tanzania</span>
                         </span>

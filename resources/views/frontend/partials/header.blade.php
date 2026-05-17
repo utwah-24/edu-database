@@ -17,7 +17,7 @@
                 </a>
             </div>
 
-            <a href="{{ route('frontend.home') }}" class="hidden sm:block font-['Montserrat'] col-start-2 row-start-1 sm:col-span-1 sm:row-start-1 sm:col-start-2 justify-self-center text-center min-w-0 max-w-[min(100%,360px)] sm:max-w-xl md:max-w-2xl lg:max-w-4xl px-2">
+            <a href="{{ route('frontend.home') }}" class="hidden sm:block col-start-2 row-start-1 sm:col-span-1 sm:row-start-1 sm:col-start-2 justify-self-center text-center min-w-0 max-w-[min(100%,360px)] sm:max-w-xl md:max-w-2xl lg:max-w-4xl px-2">
                 <p class="text-[0.5rem] font-extrabold uppercase leading-[1.02] tracking-wide text-foreground sm:text-[0.984375rem] md:text-[1.18125rem] lg:text-[1.575rem] xl:text-[1.96875rem]">Utafiti Elimu Tanzania</p>
                 <p class="mt-0.5 sm:mt-2 text-[0.5rem] font-semibold uppercase leading-[1.02] tracking-wide text-[#2C63AA] sm:text-[0.984375rem] md:text-[1.18125rem] lg:text-[1.575rem] xl:text-[1.96875rem]">University of Dar es Salaam</p>
             </a>

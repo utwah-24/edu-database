@@ -9,11 +9,16 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class EventsBreakdownTable extends BaseWidget
 {
-    protected static ?int $sort = 7;
+    protected static ?int $sort = 6;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int | string | array $columnSpan = [
+        'default' => 'full',
+        'lg' => 3,
+    ];
 
     protected static ?string $heading = 'Event content breakdown';
+
+    protected static ?string $description = 'Per-event counts for speakers, tracks, sponsors, and assets';
 
     public function table(Table $table): Table
     {

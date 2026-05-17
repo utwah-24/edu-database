@@ -7,11 +7,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@layer base {
-    h1 {
-        font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
-    }
-}
 
 :root {
     --background: oklch(0.97 0.01 80);
@@ -36,9 +31,10 @@
 }
 
 @theme inline {
-    --font-sans: 'Open Sans', system-ui, sans-serif;
-    --font-serif: 'Open Sans', system-ui, sans-serif;
-    --font-explanation: Georgia, 'Times New Roman', Times, serif;
+    --font-sans: 'Times New Roman', Times, ui-serif, Georgia, serif;
+    --font-serif: 'Times New Roman', Times, ui-serif, Georgia, serif;
+    --font-heading: 'Times New Roman', Times, ui-serif, Georgia, serif;
+    --font-explanation: 'Times New Roman', Times, ui-serif, Georgia, serif;
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -65,15 +61,24 @@
         @apply border-border outline-ring/50;
     }
     body {
-        @apply bg-background text-foreground font-sans;
+        @apply bg-background text-foreground font-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-heading);
     }
 }
 
 @layer components {
-    /* Main explanatory copy — Georgia Bold */
+    /* Main explanatory copy */
     .text-explanation {
         font-family: var(--font-explanation);
-        font-weight: 700;
+        font-weight: 400;
     }
 
     .text-explanation :where(p, li, td, th, blockquote, dd, dt) {
@@ -146,6 +151,75 @@
             max-height: 3.25rem;
             overflow: hidden;
         }
+    }
+
+    .featured-carousel-nav__btn {
+        display: inline-flex;
+        height: 2.75rem;
+        width: 2.75rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        background: rgba(255, 252, 245, 0.96);
+        color: #1a1a1a;
+        box-shadow:
+            0 1px 2px rgba(15, 23, 42, 0.08),
+            0 6px 18px -4px rgba(15, 23, 42, 0.2);
+        cursor: pointer;
+        transition:
+            transform 0.15s ease,
+            background 0.15s ease,
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+
+    .featured-carousel-nav__btn:hover {
+        transform: translateY(-1px);
+        border-color: rgb(23 108 171 / 0.45);
+        background: #fff;
+        box-shadow:
+            0 2px 4px rgba(15, 23, 42, 0.1),
+            0 10px 22px -6px rgba(23, 108, 171, 0.35);
+    }
+
+    .featured-carousel-nav__btn:active {
+        transform: translateY(0);
+    }
+
+    .featured-carousel-nav__btn:focus-visible {
+        outline: 2px solid rgb(23 108 171);
+        outline-offset: 2px;
+    }
+
+    .featured-carousel-dot {
+        height: 0.5rem;
+        width: 0.5rem;
+        border-radius: 9999px;
+        border: none;
+        background: var(--border);
+        padding: 0;
+        cursor: pointer;
+        transition: transform 0.15s ease, background 0.15s ease, width 0.15s ease;
+    }
+
+    .featured-carousel-dot.is-active {
+        width: 1.25rem;
+        background: var(--primary);
+        transform: scale(1.05);
+    }
+
+    .featured-carousel-dot:hover:not(.is-active) {
+        background: color-mix(in oklch, var(--primary) 45%, var(--border));
+    }
+
+    [data-carousel-cover].is-changing {
+        opacity: 0.55;
+        transition: opacity 0.12s ease;
+    }
+
+    [data-carousel-cover] {
+        transition: opacity 0.35s ease;
     }
 
     /* Event detail hero — height follows content; avoid huge empty scroll */

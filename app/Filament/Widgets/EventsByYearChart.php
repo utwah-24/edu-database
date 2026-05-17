@@ -9,17 +9,18 @@ use Filament\Widgets\ChartWidget;
 class EventsByYearChart extends ChartWidget
 {
     use HasReadableChartOptions;
+
     protected static ?int $sort = 3;
 
     protected static ?string $heading = 'Events by year';
 
-    protected static ?string $description = 'Conference editions in the archive';
+    protected static ?string $description = 'Conference editions published in the archive';
 
-    protected static ?string $maxHeight = '260px';
+    protected static ?string $maxHeight = '300px';
 
     protected int | string | array $columnSpan = [
         'default' => 'full',
-        'md' => 1,
+        'lg' => 1,
     ];
 
     protected function getType(): string
@@ -38,11 +39,13 @@ class EventsByYearChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Events',
+                    'label' => 'Conference editions',
                     'data' => $chart['data'],
-                    'backgroundColor' => 'rgba(232, 107, 74, 0.85)',
-                    'borderRadius' => 8,
+                    'backgroundColor' => 'rgba(232, 107, 74, 0.88)',
+                    'hoverBackgroundColor' => 'rgba(232, 107, 74, 1)',
+                    'borderRadius' => 10,
                     'borderSkipped' => false,
+                    'maxBarThickness' => 48,
                 ],
             ],
             'labels' => $chart['labels'],
@@ -51,6 +54,10 @@ class EventsByYearChart extends ChartWidget
 
     protected function getOptions(): array
     {
-        return $this->readableChartOptions();
+        $options = $this->readableChartOptions();
+
+        $options['plugins']['legend']['display'] = false;
+
+        return $options;
     }
 }

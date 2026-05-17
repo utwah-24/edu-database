@@ -147,37 +147,290 @@
         font-weight: 500 !important;
     }
 
-    /* Dashboard header */
-    .fi-dashboard-page .fi-header-heading {
-        font-size: 1.875rem !important;
-        font-weight: 700 !important;
-        letter-spacing: -0.03em;
-        line-height: 1.2 !important;
+    /* Dashboard header — replaced by welcome widget */
+    .fi-dashboard-page > .fi-header {
+        display: none !important;
     }
 
-    .fi-dashboard-page .fi-header-subheading {
-        color: var(--admin-subheading) !important;
-        max-width: 40rem;
-        line-height: 1.5 !important;
-        margin-top: 0.35rem !important;
+    .admin-welcome-widget.fi-wi {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    .admin-welcome-widget .fi-wi-content {
+        padding: 0 !important;
+    }
+
+    .admin-welcome-banner {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: linear-gradient(135deg, #1e2a3a 0%, #243447 42%, #2d3f54 100%);
+        box-shadow: var(--admin-card-shadow);
+    }
+
+    .admin-welcome-banner__glow {
+        position: absolute;
+        top: -40%;
+        right: -8%;
+        width: 22rem;
+        height: 22rem;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(232, 107, 74, 0.45) 0%, transparent 68%);
+        pointer-events: none;
+    }
+
+    .admin-welcome-banner__pattern {
+        position: absolute;
+        inset: 0;
+        opacity: 0.35;
+        background-image:
+            radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.06) 0%, transparent 45%),
+            linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%);
+        pointer-events: none;
+    }
+
+    .admin-welcome-banner__inner {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        gap: 1.5rem;
+        padding: 1.5rem 1.5rem 1rem;
+    }
+
+    @media (min-width: 1024px) {
+        .admin-welcome-banner__inner {
+            grid-template-columns: 1.15fr 1fr;
+            align-items: center;
+            padding: 1.75rem 1.75rem 1rem;
+            gap: 2rem;
+        }
+    }
+
+    .admin-welcome-banner__eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin: 0;
+        padding: 0.3rem 0.65rem;
+        border-radius: 9999px;
+        background: rgba(232, 107, 74, 0.2);
+        color: #ffd4c4;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .admin-welcome-banner__title {
+        margin: 0.85rem 0 0;
+        font-size: clamp(1.5rem, 2.5vw, 2rem);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.15;
+        color: #fff;
+    }
+
+    .admin-welcome-banner__lead {
+        margin: 0.65rem 0 0;
+        max-width: 34rem;
+        font-size: 0.9rem;
+        line-height: 1.55;
+        color: rgba(255, 255, 255, 0.78);
+    }
+
+    .admin-welcome-banner__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1.15rem;
+    }
+
+    .admin-welcome-banner__action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.45rem 0.8rem;
+        border-radius: 0.55rem;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .admin-welcome-banner__action:hover {
+        background: rgba(232, 107, 74, 0.28);
+        border-color: rgba(232, 107, 74, 0.55);
+        transform: translateY(-1px);
+    }
+
+    .admin-welcome-banner__metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.65rem;
+    }
+
+    .admin-welcome-banner__metric {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        padding: 0.85rem 0.9rem;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(6px);
+    }
+
+    .admin-welcome-banner__metric--accent {
+        border-color: rgba(232, 107, 74, 0.45);
+        background: rgba(232, 107, 74, 0.14);
+    }
+
+    .admin-welcome-banner__metric-value {
+        font-size: 1.35rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        color: #fff;
+    }
+
+    .admin-welcome-banner__metric-label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: rgba(255, 255, 255, 0.72);
+    }
+
+    .admin-welcome-banner__metric-hint {
+        font-size: 0.68rem;
+        color: rgba(255, 255, 255, 0.55);
+    }
+
+    .admin-welcome-banner__footer {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.55rem 0.85rem;
+        padding: 0.75rem 1.5rem 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(0, 0, 0, 0.12);
+    }
+
+    @media (min-width: 1024px) {
+        .admin-welcome-banner__footer {
+            padding-left: 1.75rem;
+            padding-right: 1.75rem;
+        }
+    }
+
+    .admin-welcome-banner__footer-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.68);
+    }
+
+    .admin-welcome-banner__footer-dot {
+        width: 0.25rem;
+        height: 0.25rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.35);
+    }
+
+    /* Dashboard widget grid — full-width table row */
+    .fi-dashboard-page .fi-wi {
+        width: 100%;
+    }
+
+    .fi-dashboard-page .fi-wi-widget[class*="events-breakdown"],
+    .fi-dashboard-page .fi-wi-widget:has(.fi-ta) {
+        grid-column: 1 / -1 !important;
+        width: 100% !important;
+        max-width: none !important;
     }
 
     /* Table widget */
-    .fi-wi-widget .fi-ta-ctn {
-        border-radius: 0.75rem !important;
-        border: 1px solid var(--admin-stat-border) !important;
+    .fi-dashboard-page .fi-wi-widget:has(.fi-ta) {
+        border-radius: 0.875rem !important;
+        border: 1px solid var(--admin-card-border) !important;
+        background: var(--admin-card) !important;
+        box-shadow: var(--admin-card-shadow) !important;
         overflow: hidden;
     }
 
-    .fi-wi-widget .fi-ta-header-cell {
+    .fi-dashboard-page .fi-wi-widget:has(.fi-ta) .fi-wi-header {
+        padding: 1.1rem 1.25rem 0.5rem !important;
+    }
+
+    .fi-dashboard-page .fi-wi-widget:has(.fi-ta) .fi-wi-content {
+        padding: 0 0 0.25rem !important;
+    }
+
+    .fi-dashboard-page .fi-wi-widget .fi-ta-ctn {
+        border-radius: 0 !important;
+        border: none !important;
+        border-top: 1px solid var(--admin-stat-border) !important;
+        overflow: hidden;
+    }
+
+    .fi-dashboard-page .fi-wi-widget .fi-ta-header-cell {
         font-weight: 600 !important;
         font-size: 0.75rem !important;
         text-transform: uppercase;
         letter-spacing: 0.04em;
     }
 
-    /* Chart canvas area padding */
-    .fi-wi-chart canvas {
+    .fi-dashboard-page .fi-wi-widget .fi-ta-table {
+        width: 100% !important;
+    }
+
+    /* Chart widgets — professional card treatment */
+    .fi-dashboard-page .fi-wi-chart {
+        border-radius: 0.875rem !important;
+        border: 1px solid var(--admin-card-border) !important;
+        background: var(--admin-card) !important;
+        box-shadow: var(--admin-card-shadow) !important;
+        overflow: hidden;
+    }
+
+    .fi-dashboard-page .fi-wi-chart .fi-wi-header {
+        padding: 1.1rem 1.25rem 0.35rem !important;
+        border-bottom: none !important;
+    }
+
+    .fi-dashboard-page .fi-wi-chart .fi-wi-heading {
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.02em;
+    }
+
+    .fi-dashboard-page .fi-wi-chart .fi-wi-description {
+        color: var(--admin-subheading) !important;
+        font-size: 0.78rem !important;
+        line-height: 1.45 !important;
+        margin-top: 0.2rem !important;
+    }
+
+    .fi-dashboard-page .fi-wi-chart .fi-wi-content {
+        padding: 0.5rem 1rem 1.15rem !important;
+    }
+
+    .fi-dashboard-page .fi-wi-chart .fi-wi-chart-canvas-ctn {
+        min-height: 260px;
+        padding: 0.25rem 0.35rem 0.5rem;
+    }
+
+    .fi-dashboard-page .fi-wi-chart canvas {
         max-height: 100%;
     }
 
