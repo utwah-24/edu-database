@@ -19,7 +19,7 @@
     ];
 @endphp
 
-<footer id="footer-site" class="mt-12 px-4 pb-6 sm:mt-16 sm:px-6 sm:pb-8">
+<footer id="footer-site" class="mt-auto w-full px-4 pb-6 pt-8 sm:px-6 sm:pb-8 sm:pt-10">
     <div class="mx-auto max-w-7xl overflow-hidden rounded-2xl bg-[#2C63AA] text-white shadow-md ring-1 ring-[#2C63AA]/30">
         <div class="px-6 py-8 sm:px-10 sm:py-9">
             <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
@@ -28,7 +28,7 @@
                     <a href="{{ route('frontend.home') }}" class="inline-flex items-center gap-3 rounded-lg transition-opacity hover:opacity-90">
                         <img src="{{ asset('logos/Logo2.png') }}" alt="Tanzania national emblem" class="h-11 w-auto object-contain object-center">
                         <span class="text-left leading-tight">
-                            <span class="block text-sm font-bold uppercase tracking-wide">Utafiti Elimu</span>
+                            <span class="font-heading block text-sm font-bold uppercase tracking-wide">Utafiti Elimu</span>
                             <span class="block text-xs font-semibold text-white/80">Tanzania</span>
                         </span>
                     </a>

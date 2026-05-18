@@ -6,9 +6,9 @@
     <title>@yield('title', 'Event Archive')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-background text-foreground">
+<body class="flex min-h-dvh flex-col bg-background text-foreground">
     @include('frontend.partials.header')
-    <main class="min-h-screen">
+    <main class="flex-1 w-full">
         @yield('content')
     </main>
     @include('frontend.partials.footer')
