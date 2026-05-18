@@ -975,7 +975,7 @@ class FrontendController extends Controller
                 : (string) ($event['title'] ?? 'Event'));
 
         $cardEyebrow = is_array($primaryProgramme)
-            ? 'Primary programme'
+            ? 'Primary theme'
             : ((is_array($themeRow) && trim((string) ($themeRow['theme'] ?? '')) !== '')
                 ? 'Conference theme'
                 : 'Featured conference');

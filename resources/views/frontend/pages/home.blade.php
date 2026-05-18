@@ -63,67 +63,60 @@
                                 <p data-carousel-title class="mt-2 max-w-xl text-base font-bold leading-snug text-white sm:text-lg">{{ $c0['title'] }}</p>
                             </div>
 
-                            @if($carouselHasMultiple)
-                                <div
-                                    class="featured-carousel-nav absolute bottom-4 right-4 z-40 flex flex-row gap-2 sm:bottom-5 sm:right-5"
-                                    data-carousel-nav
-                                    aria-label="Event slideshow controls"
-                                >
-                                    <button type="button" data-carousel-prev class="featured-carousel-nav__btn" aria-label="Previous event">
-                                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-                                    </button>
-                                    <button type="button" data-carousel-next class="featured-carousel-nav__btn" aria-label="Next event">
-                                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-                                    </button>
-                                </div>
-                            @endif
                         </div>
 
                         {{-- Content panel: dense layout to match fixed image height (no scroll) --}}
-                        <div class="featured-event-card__content featured-event-card__content--dense relative border-t border-border/60 bg-background lg:border-l-4 lg:border-t-0 lg:border-l-[#2C63AA]">
-                            <p data-carousel-eyebrow class="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">{{ $c0['card_eyebrow'] }}</p>
-                            <h2 data-carousel-headline class="mt-0.5 line-clamp-2 font-serif text-base font-bold leading-tight text-foreground lg:text-lg">{{ $c0['card_headline'] }}</h2>
+                        <div class="featured-event-card__content featured-event-card__content--dense relative border-t border-[#2C63AA]/12 lg:border-l-4 lg:border-t-0 lg:border-l-[#2C63AA]">
+                            <p data-carousel-eyebrow class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#2C63AA]">{{ $c0['card_eyebrow'] }}</p>
+                            <h2 data-carousel-headline class="featured-event-card__headline mt-1 line-clamp-2 text-lg font-bold leading-snug text-[#141414] lg:text-xl">{{ $c0['card_headline'] }}</h2>
 
-                            <div class="mt-2 grid gap-1.5 text-[11px] leading-snug text-muted-foreground sm:grid-cols-2">
-                                <p class="flex min-h-0 items-start gap-1.5 rounded-lg border border-border/70 bg-muted/30 px-2 py-1.5">
-                                    <svg class="mt-px h-3 w-3 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.35-7-10a7 7 0 1 1 14 0c0 5.65-7 10-7 10z"/><circle cx="12" cy="11" r="2.5"/></svg>
+                            <div class="mt-3 space-y-2 text-[13px] font-medium leading-snug text-[#2a2a2a]">
+                                <div class="flex items-start gap-2">
+                                    <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#2C63AA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-4.35-7-10a7 7 0 1 1 14 0c0 5.65-7 10-7 10z"/><circle cx="12" cy="11" r="2.5"/></svg>
                                     <span data-carousel-location class="line-clamp-2">{{ $c0['location'] }}</span>
-                                </p>
-                                <p class="flex items-center gap-1.5 rounded-lg border border-border/70 bg-muted/30 px-2 py-1.5">
-                                    <svg class="h-3 w-3 shrink-0 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>
-                                    <span data-carousel-dates class="line-clamp-1">{{ $c0['date_range_label'] }}</span>
-                                </p>
-                            </div>
-
-                            <p data-carousel-description class="text-explanation mt-2 line-clamp-2 text-[11px] leading-snug text-foreground/80 {{ $c0['card_description'] === '' ? 'hidden' : '' }}">{{ $c0['card_description'] }}</p>
-
-                            <div class="featured-event-card__stats mt-2 flex shrink-0 gap-2">
-                                <div class="flex min-w-0 flex-1 flex-col items-center justify-center rounded-lg border border-border/80 bg-muted/40 px-2 py-1.5 text-center">
-                                    <p data-carousel-speakers class="text-lg font-bold tabular-nums leading-none text-foreground">{{ $c0['speaker_count'] }}</p>
-                                    <p class="mt-0.5 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">Speakers</p>
                                 </div>
-                                <div class="flex min-w-0 flex-1 flex-col items-center justify-center rounded-lg border border-border/80 bg-muted/40 px-2 py-1.5 text-center">
-                                    <p data-carousel-resources class="text-lg font-bold tabular-nums leading-none text-foreground">{{ $c0['resource_count'] }}</p>
-                                    <p class="mt-0.5 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">Resources</p>
+                                <div class="flex items-start gap-2">
+                                    <svg class="mt-0.5 h-4 w-4 shrink-0 text-[#2C63AA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>
+                                    <span data-carousel-dates class="line-clamp-2">{{ $c0['date_range_label'] }}</span>
                                 </div>
                             </div>
 
-                            <div data-carousel-highlights-wrap class="featured-event-card__highlights mt-2 min-h-0 flex-1 overflow-hidden {{ empty($c0['highlights']) ? 'hidden' : '' }}">
-                                <p class="text-[9px] font-bold uppercase tracking-wider text-foreground/65">Programme highlights</p>
-                                <div data-carousel-highlights class="mt-1 flex flex-wrap gap-1">
+                            <div class="featured-event-card__stats mt-4 flex shrink-0 gap-3">
+                                <div class="featured-event-card__stat-cell">
+                                    <p data-carousel-speakers class="text-2xl font-bold tabular-nums leading-none tracking-tight text-[#141414] lg:text-[1.65rem]">{{ $c0['speaker_count'] }}</p>
+                                    <p class="mt-1.5 text-xs font-semibold text-[#5c5c5c]">Speakers</p>
+                                </div>
+                                <div class="featured-event-card__stat-cell">
+                                    <p data-carousel-resources class="text-2xl font-bold tabular-nums leading-none tracking-tight text-[#141414] lg:text-[1.65rem]">{{ $c0['resource_count'] }}</p>
+                                    <p class="mt-1.5 text-xs font-semibold text-[#5c5c5c]">Resources</p>
+                                </div>
+                            </div>
+
+                            <div data-carousel-highlights-wrap class="featured-event-card__highlights mt-4 min-h-0 flex-1 overflow-hidden {{ empty($c0['highlights']) ? 'hidden' : '' }}">
+                                <p class="text-sm font-bold text-[#141414]">Programme highlights</p>
+                                <div data-carousel-highlights class="mt-2 flex flex-wrap gap-2">
                                     @foreach($c0['highlights'] as $tag)
-                                        <span class="inline-flex max-w-full truncate rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium leading-tight text-primary">{{ $tag }}</span>
+                                        <span class="featured-event-card__highlight-chip max-w-full truncate">{{ $tag }}</span>
                                     @endforeach
                                 </div>
                             </div>
 
-                            <div class="featured-event-card__footer mt-auto flex shrink-0 flex-col gap-1.5 border-t border-border/60 pt-1.5 sm:flex-row sm:items-center sm:justify-between sm:pt-2">
+                            <div class="featured-event-card__footer mt-auto flex shrink-0 flex-col gap-3 border-t border-[#2C63AA]/14 pt-4 sm:flex-row sm:items-center sm:justify-between">
                                 @if($carouselHasMultiple)
                                     <div class="flex flex-wrap items-center gap-3">
-                                        <p data-carousel-counter class="text-[11px] font-semibold tabular-nums text-muted-foreground">
-                                            <span data-carousel-counter-current>1</span><span class="px-0.5 text-foreground/35">/</span><span data-carousel-counter-total>{{ count($carousel_events) }}</span>
-                                        </p>
-                                        <div data-carousel-dots class="flex items-center gap-1.5" role="tablist" aria-label="Choose event"></div>
+                                        <div
+                                            class="flex flex-row gap-2"
+                                            data-carousel-nav
+                                            aria-label="Event slideshow controls"
+                                        >
+                                            <button type="button" data-carousel-prev class="featured-carousel-nav__btn--footer" aria-label="Previous event">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+                                            </button>
+                                            <button type="button" data-carousel-next class="featured-carousel-nav__btn--footer" aria-label="Next event">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+                                            </button>
+                                        </div>
+                                        <div data-carousel-dots class="flex min-h-[1.25rem] items-center gap-1.5" role="tablist" aria-label="Choose event"></div>
                                     </div>
                                 @else
                                     <div aria-hidden="true"></div>
@@ -131,10 +124,10 @@
                                 <a
                                     href="{{ $c0['detail_url'] }}"
                                     data-carousel-detail
-                                    class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 sm:w-auto"
+                                    class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#2C63AA] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#245892] sm:w-auto"
                                 >
-                                    View details
-                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                    View Details
+                                    <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                                 </a>
                             </div>
                         </div>
@@ -158,8 +151,7 @@
                         const headline = $('[data-carousel-headline]');
                         const loc = $('[data-carousel-location]');
                         const dates = $('[data-carousel-dates]');
-                        const desc = $('[data-carousel-description]');
-                        const spk = $('[data-carousel-speakers]');
+                        const hiWrap = $('[data-carousel-highlights-wrap]');
                         const res = $('[data-carousel-resources]');
                         const hiWrap = $('[data-carousel-highlights-wrap]');
                         const hiBox = $('[data-carousel-highlights]');
@@ -167,7 +159,6 @@
                         const prev = nav ? nav.querySelector('[data-carousel-prev]') : null;
                         const next = nav ? nav.querySelector('[data-carousel-next]') : null;
                         const dots = $('[data-carousel-dots]');
-                        const counterCurrent = $('[data-carousel-counter-current]');
                         const detail = $('[data-carousel-detail]');
 
                         let i = 0;
@@ -216,11 +207,6 @@
                             if (headline) headline.textContent = d.card_headline || '';
                             if (loc) loc.textContent = d.location || '';
                             if (dates) dates.textContent = d.date_range_label || '';
-                            if (desc) {
-                                const t = (d.card_description || '').trim();
-                                desc.textContent = t;
-                                desc.classList.toggle('hidden', t === '');
-                            }
                             if (spk) spk.textContent = String(d.speaker_count ?? 0);
                             if (res) res.textContent = String(d.resource_count ?? 0);
                             const hl = Array.isArray(d.highlights) ? d.highlights : [];
@@ -229,7 +215,7 @@
                                 hiBox.innerHTML = '';
                                 hl.forEach((tag) => {
                                     const s = document.createElement('span');
-                                    s.className = 'inline-flex max-w-full truncate rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-medium leading-tight text-primary';
+                                    s.className = 'featured-event-card__highlight-chip max-w-full truncate';
                                     s.textContent = tag;
                                     hiBox.appendChild(s);
                                 });
@@ -238,7 +224,6 @@
                                 detail.href = d.detail_url || '#';
                                 detail.setAttribute('aria-label', 'View details for ' + (d.title || 'event'));
                             }
-                            if (counterCurrent) counterCurrent.textContent = String(i + 1);
                             setDots();
                             hasRendered = true;
                         };

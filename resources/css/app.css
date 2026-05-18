@@ -34,7 +34,9 @@
     --font-heading: 'Times New Roman', Times, serif;
     --font-serif: Georgia, 'Palatino Linotype', Palatino, ui-serif, Cambria, serif;
     --font-sans: Georgia, 'Palatino Linotype', Palatino, ui-serif, Cambria, serif;
-    --font-explanation: Georgia, 'Palatino Linotype', Palatino, ui-serif, Cambria, serif;
+    --font-explanation:
+        'Inter', ui-sans-serif, system-ui, sans-serif, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+        'Noto Sans', sans-serif;
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -67,6 +69,10 @@
         @apply bg-background text-foreground font-serif;
         min-height: 100%;
         min-height: 100dvh;
+    }
+
+    p {
+        font-family: var(--font-explanation);
     }
 
     h1,
@@ -161,12 +167,97 @@
         }
     }
 
+    /* Featured card — cream panel + Inter headline (matches marketing mock) */
+    .featured-event-card__content--dense {
+        background-color: #f9f6f1;
+        padding: 1.375rem 1.375rem 1.25rem;
+        @media (min-width: 1024px) {
+            padding: 1.625rem 1.75rem 1.375rem;
+        }
+    }
+
+    .featured-event-card__headline {
+        font-family: var(--font-explanation);
+        letter-spacing: -0.02em;
+    }
+
+    .featured-event-card__stat-cell {
+        flex: 1 1 0%;
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.75rem;
+        background: rgba(255, 255, 255, 0.72);
+        padding: 0.625rem 0.5rem;
+        text-align: center;
+        box-shadow: inset 0 0 0 1px rgba(44, 99, 170, 0.06);
+    }
+
+    .featured-event-card__highlight-chip {
+        display: inline-flex;
+        max-width: 100%;
+        align-items: center;
+        border-radius: 9999px;
+        border: 1px solid rgba(44, 99, 170, 0.42);
+        background: rgba(232, 241, 250, 0.95);
+        padding: 0.25rem 0.65rem;
+        font-size: 0.6875rem;
+        font-weight: 500;
+        line-height: 1.25;
+        color: #2c63aa;
+    }
+
     /* Home featured card: cap highlights chip area so panel stays within image height */
     @media (min-width: 1024px) {
         .featured-event-card__content--dense [data-carousel-highlights] {
-            max-height: 3.25rem;
+            max-height: 4.25rem;
             overflow: hidden;
         }
+    }
+
+    .featured-carousel-nav__btn--footer {
+        display: inline-flex;
+        height: 2rem;
+        width: 2rem;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        border: 1px solid rgba(44, 99, 170, 0.22);
+        background: rgba(255, 255, 255, 0.95);
+        color: #2c63aa;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+        cursor: pointer;
+        transition:
+            transform 0.15s ease,
+            background 0.15s ease,
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+
+    .featured-carousel-nav__btn--footer:hover {
+        transform: translateY(-1px);
+        border-color: rgba(44, 99, 170, 0.45);
+        background: #fff;
+        box-shadow:
+            0 2px 4px rgba(15, 23, 42, 0.08),
+            0 6px 14px -4px rgba(44, 99, 170, 0.22);
+    }
+
+    .featured-carousel-nav__btn--footer:active {
+        transform: translateY(0);
+    }
+
+    .featured-carousel-nav__btn--footer:focus-visible {
+        outline: 2px solid rgb(23 108 171);
+        outline-offset: 2px;
+    }
+
+    .featured-carousel-nav__btn--footer svg {
+        width: 1rem;
+        height: 1rem;
     }
 
     .featured-carousel-nav__btn {
@@ -227,6 +318,18 @@
 
     .featured-carousel-dot:hover:not(.is-active) {
         background: color-mix(in oklch, var(--primary) 45%, var(--border));
+    }
+
+    .featured-event-card__content--dense .featured-carousel-dot {
+        background: rgba(44, 99, 170, 0.22);
+    }
+
+    .featured-event-card__content--dense .featured-carousel-dot.is-active {
+        background: #2c63aa;
+    }
+
+    .featured-event-card__content--dense .featured-carousel-dot:hover:not(.is-active) {
+        background: rgba(44, 99, 170, 0.38);
     }
 
     [data-carousel-cover].is-changing {
